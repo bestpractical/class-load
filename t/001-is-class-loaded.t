@@ -17,12 +17,12 @@ do {
 };
 ok(is_class_loaded('Class::Require::WithISA'), "class that defines \@ISA is loaded");
 # }}}
-# $ISA (no) {{{
+# $ISA (yes, sadly) {{{
 do {
     package Class::Require::WithScalarISA;
     our $ISA = 'Class::Require';
 };
-ok(!is_class_loaded('Class::Require::WithScalarISA'), "class that defines \$ISA is not loaded");
+ok(is_class_loaded('Class::Require::WithScalarISA'), "class that defines \$ISA is loaded");
 # }}}
 # $VERSION (yes) {{{
 do {
@@ -31,12 +31,12 @@ do {
 };
 ok(is_class_loaded('Class::Require::WithVERSION'), "class that defines \$VERSION is loaded");
 # }}}
-# @VERSION (no) {{{
+# @VERSION (yes, sadly) {{{
 do {
     package Class::Require::WithArrayVERSION;
     our @VERSION = "1.0";
 };
-ok(!is_class_loaded('Class::Require::WithArrayVERSION'), "class that defines \@VERSION is not loaded");
+ok(is_class_loaded('Class::Require::WithArrayVERSION'), "class that defines \@VERSION is loaded");
 # }}}
 # method (yes) {{{
 do {

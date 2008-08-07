@@ -22,8 +22,18 @@ sub try_load_class {
 sub is_class_loaded {
     my $class = shift;
 
+    # is the module's file in %INC?
     my $file = (join '/', split '::', $class) . '.pm';
     return 1 if $INC{$file};
+
+    # any interesting symbols in this module's symbol table?
+    my $table = do {
+        no strict 'refs';
+        \%{ $class . '::' };
+    };
+
+    # ..such as @ISA?
+    return 1 if exists $table->{ISA};
 
     return 0;
 }

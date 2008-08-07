@@ -38,6 +38,10 @@ sub is_class_loaded {
     # ..such as $VERSION?
     return 1 if exists $table->{VERSION};
 
+    for my $glob (values %$table) {
+        return 1 if *{$glob}{CODE};
+    }
+
     return 0;
 }
 

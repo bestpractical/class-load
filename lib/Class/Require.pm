@@ -35,6 +35,9 @@ sub is_class_loaded {
     # ..such as @ISA?
     return 1 if exists $table->{ISA};
 
+    # ..such as $VERSION?
+    return 1 if exists $table->{VERSION};
+
     return 0;
 }
 

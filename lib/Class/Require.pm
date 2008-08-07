@@ -22,6 +22,10 @@ sub try_load_class {
 sub is_class_loaded {
     my $class = shift;
 
+    my $file = (join '/', split '::', $class) . '.pm';
+    return 1 if $INC{$file};
+
+    return 0;
 }
 
 1;

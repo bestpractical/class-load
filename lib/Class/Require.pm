@@ -36,6 +36,7 @@ sub try_load_class {
         1;
     };
 
+    delete $INC{$file};
     $ERROR = $@;
     return 0;
 }

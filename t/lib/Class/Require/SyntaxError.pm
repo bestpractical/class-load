@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-package Class::Require::SyntaxError;
+package Class::Load::SyntaxError;
 use strict;
 use warnings;
 

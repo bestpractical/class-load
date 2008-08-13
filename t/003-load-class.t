@@ -2,46 +2,46 @@
 use strict;
 use warnings;
 use Test::More tests => 18;
-use Class::Require ':all';
+use Class::Load ':all';
 use Test::Exception;
 use lib 't/lib';
 
-ok(load_class('Class::Require::OK'), "loaded class OK");
-is($Class::Require::ERROR, undef);
+ok(load_class('Class::Load::OK'), "loaded class OK");
+is($Class::Load::ERROR, undef);
 
 throws_ok {
-    load_class('Class::Require::Nonexistent')
-} qr{^Can't locate Class/Require/Nonexistent.pm in \@INC};
-like($Class::Require::ERROR, qr{^Can't locate Class/Require/Nonexistent.pm in \@INC});
+    load_class('Class::Load::Nonexistent')
+} qr{^Can't locate Class/Load/Nonexistent.pm in \@INC};
+like($Class::Load::ERROR, qr{^Can't locate Class/Load/Nonexistent.pm in \@INC});
 
-ok(load_class('Class::Require::OK'), "loaded class OK");
-is($Class::Require::ERROR, undef);
+ok(load_class('Class::Load::OK'), "loaded class OK");
+is($Class::Load::ERROR, undef);
 
 throws_ok {
-    load_class('Class::Require::SyntaxError')
+    load_class('Class::Load::SyntaxError')
 } qr{^Missing right curly or square bracket at };
-like($Class::Require::ERROR, qr{^Missing right curly or square bracket at });
+like($Class::Load::ERROR, qr{^Missing right curly or square bracket at });
 
 throws_ok {
-    load_class('Class::Require::Nonexistent')
-} qr{^Can't locate Class/Require/Nonexistent.pm in \@INC};
-like($Class::Require::ERROR, qr{^Can't locate Class/Require/Nonexistent.pm in \@INC});
+    load_class('Class::Load::Nonexistent')
+} qr{^Can't locate Class/Load/Nonexistent.pm in \@INC};
+like($Class::Load::ERROR, qr{^Can't locate Class/Load/Nonexistent.pm in \@INC});
 
 throws_ok {
-    load_class('Class::Require::SyntaxError')
+    load_class('Class::Load::SyntaxError')
 } qr{^Missing right curly or square bracket at };
-like($Class::Require::ERROR, qr{^Missing right curly or square bracket at });
+like($Class::Load::ERROR, qr{^Missing right curly or square bracket at });
 
-ok(is_class_loaded('Class::Require::OK'));
-ok(!is_class_loaded('Class::Require::Nonexistent'));
-ok(!is_class_loaded('Class::Require::SyntaxError'));
+ok(is_class_loaded('Class::Load::OK'));
+ok(!is_class_loaded('Class::Load::Nonexistent'));
+ok(!is_class_loaded('Class::Load::SyntaxError'));
 
 do {
-    package Class::Require::Inlined;
+    package Class::Load::Inlined;
     sub inlined { 1 }
 };
 
-ok(load_class('Class::Require::Inlined'), "loaded class Inlined");
-is($Class::Require::ERROR, undef);
-ok(is_class_loaded('Class::Require::Inlined'));
+ok(load_class('Class::Load::Inlined'), "loaded class Inlined");
+is($Class::Load::ERROR, undef);
+ok(is_class_loaded('Class::Load::Inlined'));
 

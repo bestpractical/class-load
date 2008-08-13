@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-package Class::Require::OK;
+package Class::Load::OK;
 use strict;
 use warnings;
 

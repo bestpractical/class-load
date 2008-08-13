@@ -1,5 +1,5 @@
 #!/usr/bin/env perl
-package Class::Require;
+package Class::Load;
 use strict;
 use warnings;
 use base 'Exporter';

@@ -1,7 +1,7 @@
 use inc::Module::Install;
 
-name           'Class-Require';
-all_from       'lib/Class/Require.pm';
+name           'Class-Load';
+all_from       'lib/Class/Load.pm';
 
 build_requires 'Test::More';
 

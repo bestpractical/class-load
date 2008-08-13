@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 8;
+use Test::More tests => 11;
 
 use Class::Require 'is_class_loaded';
 
@@ -51,5 +51,26 @@ do {
     our $FOO = 1;
 };
 ok(!is_class_loaded('Class::Require::WithScalar'), "class that defines just a scalar is not loaded");
+# }}}
+# subpackage (no) {{{
+do {
+    package Class::Require::Foo::Bar;
+    sub bar {}
+};
+ok(!is_class_loaded('Class::Require::Foo'), "even if Foo::Bar is loaded, Foo is not");
+# }}}
+# superstring (no) {{{
+do {
+    package Class::Require::Quuxquux;
+    sub quux {}
+};
+ok(!is_class_loaded('Class::Require::Quux'), "Quuxquux does not imply the existence of Quux");
+# }}}
+# use constant (yes) {{{
+do {
+    package Class::Require::WithConstant;
+    use constant PI => 3;
+};
+ok(is_class_loaded('Class::Require::WithConstant'), "defining a constant means the class is loaded");
 # }}}
 

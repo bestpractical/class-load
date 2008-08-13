@@ -9,14 +9,33 @@ our %EXPORT_TAGS = (
     all => \@EXPORT_OK,
 );
 
+our $ERROR;
+
 sub load_class {
     my $class = shift;
 
+    return 1 if try_load_class($class);
+    die "Unable to load class $class: $ERROR";
 }
 
 sub try_load_class {
     my $class = shift;
 
+    undef $ERROR;
+
+    return 1 if is_class_loaded($class);
+
+    my $file = $class . '.pm';
+    $file =~ s{::}{/}g;
+
+    return 1 if eval {
+        local $SIG{__DIE__} = 'DEFAULT';
+        require $file;
+        1;
+    };
+
+    $ERROR = $@;
+    return 0;
 }
 
 sub is_class_loaded {
@@ -38,6 +57,7 @@ sub is_class_loaded {
     # ..such as $VERSION?
     return 1 if exists $table->{VERSION};
 
+    # ..or a method?
     for my $glob (values %$table) {
         return 1 if *{$glob}{CODE};
     }

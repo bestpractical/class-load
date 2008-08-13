@@ -3,6 +3,7 @@ package Class::Require;
 use strict;
 use warnings;
 use base 'Exporter';
+use File::Spec;
 
 our @EXPORT_OK = qw/load_class try_load_class is_class_loaded/;
 our %EXPORT_TAGS = (
@@ -27,8 +28,12 @@ sub try_load_class {
 
     return 1 if is_class_loaded($class);
 
-    my $file = $class . '.pm';
-    $file =~ s{::}{/}g;
+    # see rt.perl.org #19213
+    my @parts = split '::', $class;
+    my $file = $^O eq 'MSWin32'
+             ? join '/', @parts
+             : File::Spec->catfile(@parts);
+    $file .= '.pm';
 
     return 1 if eval {
         local $SIG{__DIE__} = 'DEFAULT';

@@ -15,7 +15,9 @@ sub load_class {
     my $class = shift;
 
     return 1 if try_load_class($class);
-    die "Unable to load class $class: $ERROR";
+
+    require Carp;
+    Carp::croak $ERROR;
 }
 
 sub try_load_class {

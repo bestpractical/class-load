@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 15;
+use Test::More tests => 16;
 use Class::Require ':all';
 use lib 't/lib';
 
@@ -26,4 +26,13 @@ like($Class::Require::ERROR, qr{^Missing right curly or square bracket at });
 ok(is_class_loaded('Class::Require::OK'));
 ok(!is_class_loaded('Class::Require::Nonexistent'));
 ok(!is_class_loaded('Class::Require::SyntaxError'));
+
+do {
+    package Class::Require::Inlined;
+    sub inlined { 1 }
+};
+
+ok(try_load_class('Class::Require::Inlined'), "loaded class Inlined");
+is($Class::Require::ERROR, undef);
+ok(is_class_loaded('Class::Require::Inlined'));
 

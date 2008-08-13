@@ -3,24 +3,33 @@ use strict;
 use warnings;
 use Test::More tests => 15;
 use Class::Require ':all';
+use Test::Exception;
 use lib 't/lib';
 
-ok(try_load_class('Class::Require::OK'), "loaded class OK");
+ok(load_class('Class::Require::OK'), "loaded class OK");
 is($Class::Require::ERROR, undef);
 
-ok(!try_load_class('Class::Require::Nonexistent'), "didn't load class Nonexistent");
+throws_ok {
+    load_class('Class::Require::Nonexistent')
+} qr{^Can't locate Class/Require/Nonexistent.pm in \@INC};
 like($Class::Require::ERROR, qr{^Can't locate Class/Require/Nonexistent.pm in \@INC});
 
-ok(try_load_class('Class::Require::OK'), "loaded class OK");
+ok(load_class('Class::Require::OK'), "loaded class OK");
 is($Class::Require::ERROR, undef);
 
-ok(!try_load_class('Class::Require::SyntaxError'), "didn't load class SyntaxError");
+throws_ok {
+    load_class('Class::Require::SyntaxError')
+} qr{^Missing right curly or square bracket at };
 like($Class::Require::ERROR, qr{^Missing right curly or square bracket at });
 
-ok(!try_load_class('Class::Require::Nonexistent'), "didn't load class Nonexistent");
+throws_ok {
+    load_class('Class::Require::Nonexistent')
+} qr{^Can't locate Class/Require/Nonexistent.pm in \@INC};
 like($Class::Require::ERROR, qr{^Can't locate Class/Require/Nonexistent.pm in \@INC});
 
-ok(!try_load_class('Class::Require::SyntaxError'), "didn't load class SyntaxError");
+throws_ok {
+    load_class('Class::Require::SyntaxError')
+} qr{^Missing right curly or square bracket at };
 like($Class::Require::ERROR, qr{^Missing right curly or square bracket at });
 
 ok(is_class_loaded('Class::Require::OK'));

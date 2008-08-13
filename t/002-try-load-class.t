@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 16;
+use Test::More tests => 18;
 use Class::Require ':all';
 use lib 't/lib';
 

@@ -5,6 +5,8 @@ use warnings;
 use base 'Exporter';
 use File::Spec;
 
+our $VERSION = '0.01';
+
 our @EXPORT_OK = qw/load_class try_load_class is_class_loaded/;
 our %EXPORT_TAGS = (
     all => \@EXPORT_OK,
@@ -78,7 +80,7 @@ __END__
 
 =head1 NAME
 
-Class::Load - a working require "Class::Name"
+Class::Load - a working `require "Class::Name"` and more
 
 =head1 SYNOPSIS
 
@@ -146,6 +148,8 @@ C<is_class_loaded>.
 
 This module was designed to be used anywhere you have
 C<if (eval "require $module"; 1)>.
+
+=back
 
 =head1 AUTHOR
 

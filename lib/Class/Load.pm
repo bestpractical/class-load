@@ -153,7 +153,7 @@ C<if (eval "require $module"; 1)>.
 
 =head1 AUTHOR
 
-Shawn M Moore, C<< <sartak at gmail.com> >>
+Shawn M Moore, C<< <sartak at bestpractical.com> >>
 
 =head1 BUGS
 

@@ -1,6 +1,9 @@
 Revision history for Class-Load
 
-0.03
+0.04
+
+0.03    Sun Nov 9 14:55:26 EST 2008
+        Dist fix
 
 0.02    Sun Nov 9 14:49:40 EST 2008
         Declare dependency on Test::Exception

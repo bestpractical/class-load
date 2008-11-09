@@ -80,7 +80,7 @@ __END__
 
 =head1 NAME
 
-Class::Load - a working `require "Class::Name"` and more
+Class::Load - a working (require "Class::Name") and more
 
 =head1 SYNOPSIS
 

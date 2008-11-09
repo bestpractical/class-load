@@ -1,6 +1,7 @@
 Revision history for Class-Load
 
-0.02
+0.02    Sun Nov 9 14:49:40 EST 2008
+        Declare dependency on Test::Exception
 
 0.01    Wed Aug 13 20:28:37 EDT 2008
         First version, released on an unsuspecting world.

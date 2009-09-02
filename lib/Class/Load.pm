@@ -1,4 +1,3 @@
-#!/usr/bin/env perl
 package Class::Load;
 use strict;
 use warnings;

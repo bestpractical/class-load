@@ -5,7 +5,7 @@ use warnings;
 use base 'Exporter';
 use File::Spec;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 our @EXPORT_OK = qw/load_class try_load_class is_class_loaded/;
 our %EXPORT_TAGS = (

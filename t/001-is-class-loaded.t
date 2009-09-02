@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 11;
+use Test::More tests => 10;
 
 use Class::Load 'is_class_loaded';
 
@@ -30,13 +30,6 @@ do {
     our $VERSION = '1.0';
 };
 ok(is_class_loaded('Class::Load::WithVERSION'), "class that defines \$VERSION is loaded");
-# }}}
-# @VERSION (yes, sadly) {{{
-do {
-    package Class::Load::WithArrayVERSION;
-    our @VERSION = "1.0";
-};
-ok(is_class_loaded('Class::Load::WithArrayVERSION'), "class that defines \@VERSION is loaded");
 # }}}
 # method (yes) {{{
 do {

@@ -24,7 +24,7 @@ like($Class::Load::ERROR, qr{^Missing right curly or square bracket at });
 
 ok(is_class_loaded('Class::Load::OK'));
 ok(!is_class_loaded('Class::Load::Nonexistent'));
-ok(is_class_loaded('Class::Load::SyntaxError'));
+ok(!is_class_loaded('Class::Load::SyntaxError'));
 
 do {
     package Class::Load::Inlined;

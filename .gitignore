@@ -1,0 +1,10 @@
+*.swp
+MANIFEST
+MANIFEST.bak
+META.yml
+Makefile
+Makefile.old
+SIGNATURE
+blib/
+pm_to_blib
+Class-Load-*

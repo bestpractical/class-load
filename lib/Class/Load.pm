@@ -134,14 +134,17 @@ Class::Load - a working (require "Class::Name") and more
 =head1 DESCRIPTION
 
 C<require EXPR> only accepts C<Class/Name.pm> style module names, not
-C<Class::Name>. How frustrating!
+C<Class::Name>. How frustrating! For that, we provide
+C<load_class 'Class::Name'>.
 
 It's often useful to test whether a module can be loaded, instead of throwing
-an error when it's not available.
+an error when it's not available. For that, we provide
+C<try_load_class 'Class::Name'>.
 
 Finally, sometimes we need to know whether a particular class has been loaded.
 Asking C<%INC> is an option, but that will miss inner packages and any class
-for which the filename does not correspond to the package name.
+for which the filename does not correspond to the package name. For that, we
+provide C<is_class_loaded 'Class::Name'>.
 
 =head1 FUNCTIONS
 
@@ -165,8 +168,8 @@ packages which C<require> does not check.
 =head2 is_class_loaded Class::Name -> 0|1
 
 This uses a number of heuristics to determine if the class C<Class::Name> is
-loaded. We check first whether it has an entry in C<%INC>, then check its
-symbol table for interesting values.
+loaded. There heuristics were taken from L<Class::MOP>'s old pure-perl
+implementation.
 
 =head1 SEE ALSO
 
@@ -185,7 +188,7 @@ C<is_class_loaded>.
 =item L<Moose>, L<Jifty>, L<Prophet>, etc
 
 This module was designed to be used anywhere you have
-C<if (eval "require $module"; 1)>.
+C<if (eval "require $module"; 1)>, which occurs in many large projects.
 
 =back
 
@@ -193,7 +196,7 @@ C<if (eval "require $module"; 1)>.
 
 Shawn M Moore, C<< <sartak at bestpractical.com> >>
 
-The implementation if C<is_class_loaded> has been taken from L<Class::MOP>.
+The implementation of C<is_class_loaded> has been taken from L<Class::MOP>.
 
 =head1 BUGS
 

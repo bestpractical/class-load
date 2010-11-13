@@ -1,6 +1,13 @@
 Revision history for Class-Load
 
 0.06
+        Add load_optional_class($class) that fails only if
+        there is a problem with the attempted-to-load $class.
+        ( Kent Fredric )
+
+        Force internal require to try-again if we are SURE the class
+        is not there. This produces reliable errors. ( Kent Fredric )
+
         Replace Test::Exception with Test::Fatal ( Kent Fredric )
 
 0.05    Wed Sep 2 06:18:13 EST 2009

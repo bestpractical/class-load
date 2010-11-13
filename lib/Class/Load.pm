@@ -23,7 +23,6 @@ sub load_class {
     my $class = shift;
 
     return 1 if try_load_class($class);
-
     require Carp;
     Carp::croak $ERROR;
 }
@@ -32,16 +31,19 @@ sub load_optional_class {
     my $class = shift;
     # If success, then we report "Its there"
     return 1 if try_load_class($class);
+
     # My testing says that if its in INC, the file definately exists
     # on disk. In all versions of Perl. The value isn't reliable,
     # but it existing is.
-    return 0 unless exists $INC{ _mod2pm($class) };
+    my $file = _mod2pm( $class );
+    return 0 unless exists $INC{$file};
+
     require Carp;
     Carp::croak $ERROR;
 }
 
 sub _mod2pm {
-    my $mod = shift;
+    my $class = shift;
     # see rt.perl.org #19213
     my @parts = split '::', $class;
     my $file = $^O eq 'MSWin32'

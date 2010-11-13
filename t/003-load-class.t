@@ -3,23 +3,23 @@ use strict;
 use warnings;
 use Test::More tests => 14;
 use Class::Load ':all';
-use Test::Exception;
+use Test::Fatal;
 use lib 't/lib';
 
 ok(load_class('Class::Load::OK'), "loaded class OK");
 is($Class::Load::ERROR, undef);
 
-throws_ok {
+like( exception {
     load_class('Class::Load::Nonexistent')
-} qr{^Can't locate Class/Load/Nonexistent.pm in \@INC};
+}, qr{^Can't locate Class/Load/Nonexistent.pm in \@INC});
 like($Class::Load::ERROR, qr{^Can't locate Class/Load/Nonexistent.pm in \@INC});
 
 ok(load_class('Class::Load::OK'), "loaded class OK");
 is($Class::Load::ERROR, undef);
 
-throws_ok {
+like( exception {
     load_class('Class::Load::SyntaxError')
-} qr{^Missing right curly or square bracket at };
+}, qr{^Missing right curly or square bracket at });
 like($Class::Load::ERROR, qr{^Missing right curly or square bracket at });
 
 ok(is_class_loaded('Class::Load::OK'));

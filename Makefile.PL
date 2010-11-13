@@ -5,7 +5,7 @@ all_from   'lib/Class/Load.pm';
 repository 'http://github.com/bestpractical/class-load';
 
 build_requires 'Test::More';
-build_requires 'Test::Exception';
+build_requires 'Test::Fatal';
 
 WriteAll;
 

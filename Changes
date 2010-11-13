@@ -1,6 +1,7 @@
 Revision history for Class-Load
 
 0.06
+        Replace Test::Exception with Test::Fatal ( Kent Fredric )
 
 0.05    Wed Sep 2 06:18:13 EST 2009
         Cargo-cult Class::MOP's is_class_loaded so we work on 5.10

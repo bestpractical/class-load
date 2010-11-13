@@ -6,7 +6,7 @@ use File::Spec;
 
 our $VERSION = '0.06';
 
-our @EXPORT_OK = qw/load_class try_load_class is_class_loaded/;
+our @EXPORT_OK = qw/load_class load_optional_class try_load_class is_class_loaded/;
 our %EXPORT_TAGS = (
     all => \@EXPORT_OK,
 );

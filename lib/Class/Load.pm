@@ -137,8 +137,13 @@ sub is_class_loaded {
 
         # constant subs
         if ( IS_RUNNING_ON_5_10 ) {
-            return 1 if ref $glob eq 'SCALAR';
+            my $ref = ref($glob);
+            return 1 if $ref eq 'SCALAR' || $ref eq 'REF';
         }
+
+        # stubs
+        my $refref = ref(\$glob);
+        return 1 if $refref eq 'SCALAR';
 
         return 1 if defined *{$glob}{CODE};
     }

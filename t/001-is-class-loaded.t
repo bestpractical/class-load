@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 10;
+use Test::More tests => 13;
 
 use Class::Load 'is_class_loaded';
 
@@ -65,5 +65,26 @@ do {
     use constant PI => 3;
 };
 ok(is_class_loaded('Class::Load::WithConstant'), "defining a constant means the class is loaded");
+# }}}
+# use constant with reference (yes) {{{
+do {
+    package Class::Load::WithRefConstant;
+    use constant PI => \3;
+};
+ok(is_class_loaded('Class::Load::WithRefConstant'), "defining a constant as a reference means the class is loaded");
+# }}}
+# stub (yes) {{{
+do {
+    package Class::Load::WithStub;
+    sub foo;
+};
+ok(is_class_loaded('Class::Load::WithStub'), "defining a stub means the class is loaded");
+# }}}
+# stub with prototype (yes) {{{
+do {
+    package Class::Load::WithPrototypedStub;
+    sub foo (&);
+};
+ok(is_class_loaded('Class::Load::WithPrototypedStub'), "defining a stub with a prototype means the class is loaded");
 # }}}
 

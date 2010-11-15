@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use base 'Exporter';
 use File::Spec;
+use Scalar::Util 'reftype';
 
 our $VERSION = '0.06';
 

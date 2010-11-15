@@ -67,10 +67,10 @@ sub try_load_class {
     my $file = _mod2pm($class);
     # This says "our diagnostics of the package
     # say perl's INC status about the file being loaded are
-    # wrong", so we delete it from $INC, so when we call require(),
+    # wrong", so we delete it from %INC, so when we call require(),
     # perl will *actually* try reloading the file.
     #
-    # If the file is already in $INC, it won't retry,
+    # If the file is already in %INC, it won't retry,
     # And on 5.8, it won't fail either!
     #
     # The extra benefit of this trick, is it helps even on
@@ -219,7 +219,7 @@ implementation.
 
 =head2 load_optional_class Class::Name -> 0|1
 
-C<load_optional_class> is lots like C<try_load_class>, but also lots like
+C<load_optional_class> is a lot like C<try_load_class>, but also a lot like
 C<load_class>.
 
 If the class exists, and it works, then it will return 1.
@@ -228,7 +228,7 @@ If the class doesn't exist, and it appears to not exist on disk either, it
 will return 0.
 
 If the class exists on disk, but loading from disk results in an error
-( ie: Syntax ), then it will C<croak> with that error.
+( ie: a syntax error ), then it will C<croak> with that error.
 
 This is useful for using if you want a fallback module system, ie:
 

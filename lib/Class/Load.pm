@@ -263,12 +263,6 @@ Shawn M Moore, C<< <sartak at bestpractical.com> >>
 
 The implementation of C<is_class_loaded> has been taken from L<Class::MOP>.
 
-=head1 BUGS
-
-Please report any bugs or feature requests to
-C<bug-class-load at rt.cpan.org>, or through the web interface at
-L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Class-Load>.
-
 =head1 COPYRIGHT & LICENSE
 
 Copyright 2008-2010 Best Practical Solutions.

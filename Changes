@@ -1,6 +1,6 @@
 Revision history for Class-Load
 
-0.06
+0.06    Mon Nov 15 13:35:37 EST 2010
         BACK COMPAT CHANGE: Remove $Class::Load::ERROR in favor of a
         contextual return value ( Jesse Luehrs )
 

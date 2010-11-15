@@ -1,6 +1,9 @@
 Revision history for Class-Load
 
 0.06
+        BACK COMPAT CHANGE: Remove $Class::Load::ERROR in favor of a
+        contextual return value ( Jesse Luehrs )
+
         Add load_optional_class($class) that fails only if
         there is a problem with the attempted-to-load $class.
         ( Kent Fredric )

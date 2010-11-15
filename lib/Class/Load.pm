@@ -202,9 +202,10 @@ will not try to load the class. This is useful when you have inner packages
 which C<require> does not check.
 
 =head2 try_load_class Class::Name -> 0|1
+=head2 try_load_class Class::Name -> (0|1, error message)
 
 Returns 1 if the class was loaded, 0 if it was not. If the class was not
-loaded, the error will be returned as a second return value.
+loaded, the error will be returned as a second return value in list context.
 
 Again, if C<Class::Name> is already loaded (checked with C<is_class_loaded>)
 then it will not try to load the class. This is useful when you have inner

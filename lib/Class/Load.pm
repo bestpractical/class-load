@@ -22,9 +22,11 @@ BEGIN {
 sub load_class {
     my $class = shift;
 
-    return 1 if try_load_class($class);
+    my ($res, $e) = try_load_class($class);
+    return 1 if $res;
+
     require Carp;
-    Carp::croak $ERROR;
+    Carp::croak $e;
 }
 
 sub load_optional_class {
@@ -56,6 +58,7 @@ sub _mod2pm {
 sub try_load_class {
     my $class = shift;
 
+    local $@;
     undef $ERROR;
 
     return 1 if is_class_loaded($class);
@@ -80,7 +83,8 @@ sub try_load_class {
     };
 
     $ERROR = $@;
-    return 0;
+    return 0 unless wantarray;
+    return 0, $@;
 }
 
 sub _is_valid_class_name {
@@ -194,7 +198,7 @@ which C<require> does not check.
 =head2 try_load_class Class::Name -> 0|1
 
 Returns 1 if the class was loaded, 0 if it was not. If the class was not
-loaded, the error will be available in C<$Class::Load::ERROR>.
+loaded, the error will be returned as a second return value.
 
 Again, if C<Class::Name> is already loaded (checked with C<is_class_loaded>)
 then it will not try to load the class. This is useful when you have inner

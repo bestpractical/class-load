@@ -241,15 +241,14 @@ get the behaviour of it simply not existing.
 
 =over 4
 
-=item L<UNIVERSAL::require>
+=item L<http://blog.fox.geek.nz/2010/11/searching-design-spec-for-ultimate.html>
 
-Adds a C<require> method to C<UNIVERSAL> so that you can say
-C<< Class::Name->require >>. I personally dislike the pollution.
+This blog post is a good overview of the current state of the existing modules
+for loading other modules in various ways.
 
-=item L<Module::Load>
+=item L<http://blog.fox.geek.nz/2010/11/handling-optional-requirements-with.html>
 
-Supports C<Class::Name> and C<< Class/Name.pm >> formats, no C<try_to_load> or
-C<is_class_loaded>.
+This blog post describes how to handle optional modules with L<Class::Load>.
 
 =item L<Moose>, L<Jifty>, L<Prophet>, etc
 

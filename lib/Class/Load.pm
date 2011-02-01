@@ -250,6 +250,11 @@ for loading other modules in various ways.
 
 This blog post describes how to handle optional modules with L<Class::Load>.
 
+=item L<http://d.hatena.ne.jp/tokuhirom/20110202/1296598578>
+
+This Japanese blog post describes why L<DBIx::Skinny> now uses L<Class::Load>
+over its competitors.
+
 =item L<Moose>, L<Jifty>, L<Prophet>, etc
 
 This module was designed to be used anywhere you have

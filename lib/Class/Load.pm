@@ -21,13 +21,21 @@ BEGIN {
 }
 
 sub load_class {
-    my $class = shift;
+    my $class   = shift;
+    my $options = shift;
 
-    my ($res, $e) = try_load_class($class);
+    my ($res, $e) = try_load_class($class, $options);
     return 1 if $res;
 
     require Carp;
     Carp::croak $e;
+}
+
+sub _check_version {
+    my $class = shift;
+    my $version = shift;
+
+    $class->VERSION($version);
 }
 
 sub load_optional_class {
@@ -57,12 +65,23 @@ sub _mod2pm {
 }
 
 sub try_load_class {
-    my $class = shift;
+    my $class   = shift;
+    my $options = shift;
 
     local $@;
     undef $ERROR;
 
-    return 1 if is_class_loaded($class);
+    if (is_class_loaded($class)) {
+        # We need to check this here rather than in is_class_loaded() because
+        # we want to return the error message for a failed version check, but
+        # is_class_loaded just returns true/false.
+        return 1 unless $options && $options->{-version};
+        return 1 if eval {
+            $class->VERSION($options->{-version});
+            1;
+        };
+        return _error();
+    }
 
     my $file = _mod2pm($class);
     # This says "our diagnostics of the package
@@ -80,9 +99,16 @@ sub try_load_class {
     return 1 if eval {
         local $SIG{__DIE__} = 'DEFAULT';
         require $file;
+        if ($options && $options->{-version}) {
+            $class->VERSION($options->{-version});
+        }
         1;
     };
 
+    return _error();
+}
+
+sub _error {
     $ERROR = $@;
     return 0 unless wantarray;
     return 0, $@;
@@ -101,6 +127,21 @@ sub _is_valid_class_name {
 }
 
 sub is_class_loaded {
+    my $class   = shift;
+    my $options = shift;
+
+    my $loaded = _is_class_loaded($class);
+
+    return $loaded if ! $loaded;
+    return $loaded unless $options && $options->{-version};
+
+    return eval {
+        $class->VERSION($options->{-version});
+        1;
+    } ? 1 : 0;
+}
+
+sub _is_class_loaded {
     my $class = shift;
 
     return 0 unless _is_valid_class_name($class);
@@ -193,7 +234,7 @@ provide C<is_class_loaded 'Class::Name'>.
 
 =head1 FUNCTIONS
 
-=head2 load_class Class::Name
+=head2 load_class Class::Name, \%options
 
 C<load_class> will load C<Class::Name> or throw an error, much like C<require>.
 
@@ -201,7 +242,12 @@ If C<Class::Name> is already loaded (checked with C<is_class_loaded>) then it
 will not try to load the class. This is useful when you have inner packages
 which C<require> does not check.
 
-=head2 try_load_class Class::Name -> 0|1
+The C<%options> hash currently accepts one key, C<-version>. If you specify a
+version, then this subroutine will call C<< Class::Name->VERSION(
+$options{-version} ) >> internally, which will throw an error if the class's
+version is not equal to or greater than the version you requested.
+
+=head2 try_load_class Class::Name, \%options -> 0|1
 =head2 try_load_class Class::Name -> (0|1, error message)
 
 Returns 1 if the class was loaded, 0 if it was not. If the class was not
@@ -211,18 +257,26 @@ Again, if C<Class::Name> is already loaded (checked with C<is_class_loaded>)
 then it will not try to load the class. This is useful when you have inner
 packages which C<require> does not check.
 
-=head2 is_class_loaded Class::Name -> 0|1
+Like C<load_class>, you can pass a C<-version> in C<%options>. If the version
+is not sufficient, then this subroutine will return false.
+
+=head2 is_class_loaded Class::Name, \%options -> 0|1
 
 This uses a number of heuristics to determine if the class C<Class::Name> is
 loaded. There heuristics were taken from L<Class::MOP>'s old pure-perl
 implementation.
 
-=head2 load_optional_class Class::Name -> 0|1
+Like C<load_class>, you can pass a C<-version> in C<%options>. If the version
+is not sufficient, then this subroutine will return false.
+
+=head2 load_optional_class Class::Name, \%options -> 0|1
 
 C<load_optional_class> is a lot like C<try_load_class>, but also a lot like
 C<load_class>.
 
-If the class exists, and it works, then it will return 1.
+If the class exists, and it works, then it will return 1. If you specify a
+version in C<%options>, then the version check must succeed or it will return
+0.
 
 If the class doesn't exist, and it appears to not exist on disk either, it
 will return 0.

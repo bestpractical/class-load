@@ -1,9 +1,10 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 13;
+use Test::More tests => 17;
 
 use Class::Load 'is_class_loaded';
+use lib 't/lib';
 
 # basic {{{
 ok(is_class_loaded('Class::Load'), "Class::Load is loaded");
@@ -87,4 +88,12 @@ do {
 };
 ok(is_class_loaded('Class::Load::WithPrototypedStub'), "defining a stub with a prototype means the class is loaded");
 # }}}
+
+ok(!is_class_loaded('Class::Load::VersionCheck'), 'Class::Load::VersionCheck has not been loaded yet');
+require Class::Load::VersionCheck;
+ok(is_class_loaded('Class::Load::VersionCheck'), 'Class::Load::VersionCheck has been loaded');
+ok(!is_class_loaded('Class::Load::VersionCheck', {-version => 43}),
+   'Class::Load::VersionCheck has been loaded but the version check failed');
+ok(is_class_loaded('Class::Load::VersionCheck', {-version => 41}),
+   'Class::Load::VersionCheck has been loaded and the version check passed');
 

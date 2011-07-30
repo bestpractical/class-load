@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 14;
+use Test::More tests => 18;
 use Class::Load ':all';
 use lib 't/lib';
 
@@ -29,4 +29,11 @@ do {
 ok(try_load_class('Class::Load::Inlined'), "loaded class Inlined");
 is($Class::Load::ERROR, undef);
 ok(is_class_loaded('Class::Load::Inlined'));
+
+ok(!try_load_class('Class::Load::VersionCheck', { -version => 43 }));
+ok(try_load_class('Class::Load::VersionCheck', { -version => 41 }));
+
+ok(try_load_class('Class::Load::VersionCheck2', { -version => 41 }));
+ok(!try_load_class('Class::Load::VersionCheck2', { -version => 43 }));
+
 

@@ -3,6 +3,8 @@ use strict;
 use warnings;
 use Test::More 0.88;
 
-use_ok 'Class::Load';
+use lib 't/lib';
+
+use_ok 'Test::Class::Load';
 
 done_testing;

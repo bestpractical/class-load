@@ -3,8 +3,8 @@ use strict;
 use warnings;
 use Test::More 0.88;
 
-use Class::Load 'is_class_loaded';
 use lib 't/lib';
+use Test::Class::Load 'is_class_loaded';
 
 # basic {{{
 ok(is_class_loaded('Class::Load'), "Class::Load is loaded");

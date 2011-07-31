@@ -4,8 +4,8 @@ use warnings;
 
 use Test::More 0.88;
 use Test::Fatal;
-use Class::Load qw( :all );
 use lib 't/lib';
+use Test::Class::Load qw( :all );
 
 is(
   exception {

@@ -2,8 +2,8 @@
 use strict;
 use warnings;
 use Test::More 0.88;
-use Class::Load ':all';
 use lib 't/lib';
+use Test::Class::Load ':all';
 
 ok(try_load_class('Class::Load::OK'), "loaded class OK");
 is($Class::Load::ERROR, undef);

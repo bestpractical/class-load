@@ -27,8 +27,7 @@ sub load_class {
     my ($res, $e) = try_load_class($class, $options);
     return 1 if $res;
 
-    require Carp;
-    Carp::croak $e;
+    _croak($e);
 }
 
 sub _check_version {
@@ -49,8 +48,7 @@ sub load_optional_class {
     my $file = _mod2pm( $class );
     return 0 unless exists $INC{$file};
 
-    require Carp;
-    Carp::croak $ERROR;
+    _croak($ERROR);
 }
 
 sub _mod2pm {
@@ -75,7 +73,7 @@ sub try_load_class {
         # We need to check this here rather than in is_class_loaded() because
         # we want to return the error message for a failed version check, but
         # is_class_loaded just returns true/false.
-        return 1 unless $options && $options->{-version};
+        return 1 unless $options && defined $options->{-version};
         return 1 if eval {
             $class->VERSION($options->{-version});
             1;
@@ -99,19 +97,12 @@ sub try_load_class {
     return 1 if eval {
         local $SIG{__DIE__} = 'DEFAULT';
         require $file;
-        if ($options && $options->{-version}) {
-            $class->VERSION($options->{-version});
-        }
+        $class->VERSION($options->{-version})
+            if $options && defined $options->{-version};
         1;
     };
 
     return _error();
-}
-
-sub _error {
-    $ERROR = $@;
-    return 0 unless wantarray;
-    return 0, $@;
 }
 
 sub _is_valid_class_name {
@@ -192,6 +183,18 @@ sub _is_class_loaded {
 
     # fail
     return 0;
+}
+
+sub _error {
+    $ERROR = $@;
+    return 0 unless wantarray;
+    return 0, $@;
+}
+
+sub _croak {
+    require Carp;
+    local $Carp::CarpLevel = $Carp::CarpLevel + 1;
+    Carp::croak(shift);
 }
 
 1;

@@ -42,7 +42,7 @@ sub load_optional_class {
     # If success, then we report "Its there"
     return 1 if try_load_class($class);
 
-    # My testing says that if its in INC, the file definately exists
+    # My testing says that if its in INC, the file definitely exists
     # on disk. In all versions of Perl. The value isn't reliable,
     # but it existing is.
     my $file = _mod2pm( $class );

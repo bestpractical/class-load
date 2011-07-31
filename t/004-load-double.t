@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 2;
+use Test::More 0.88;
 use Class::Load ':all';
 use Test::Fatal;
 
@@ -26,3 +26,4 @@ like( exception {
     load_class('Class::Load::SyntaxError');
 }, qr/syntax error/ );
 
+done_testing;

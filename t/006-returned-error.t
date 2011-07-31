@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 15;
+use Test::More 0.88;
 use Class::Load ':all';
 use lib 't/lib';
 
@@ -45,3 +45,5 @@ ok(!is_class_loaded('Class::Load::SyntaxError'));
     ok(!try_load_class('Class::Load::Nonexistent'), "didn't load class Nonexistent");
     is($@, "foo");
 }
+
+done_testing;

@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 18;
+use Test::More 0.88;
 use Class::Load ':all';
 use Test::Fatal;
 use lib 't/lib';
@@ -48,3 +48,5 @@ ok(load_class('Class::Load::VersionCheck2', { -version => 41 }),
 like( exception {
     load_class('Class::Load::VersionCheck2', { -version => 43 })
 }, qr/^Class::Load::VersionCheck2 version 43 required/);
+
+done_testing;

@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 17;
+use Test::More 0.88;
 
 use Class::Load 'is_class_loaded';
 use lib 't/lib';
@@ -97,3 +97,4 @@ ok(!is_class_loaded('Class::Load::VersionCheck', {-version => 43}),
 ok(is_class_loaded('Class::Load::VersionCheck', {-version => 41}),
    'Class::Load::VersionCheck has been loaded and the version check passed');
 
+done_testing;

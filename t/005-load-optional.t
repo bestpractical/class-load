@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 8;
+use Test::More 0.88;
 use Test::Fatal;
 use Class::Load qw( :all );
 use lib 't/lib';
@@ -39,3 +39,5 @@ is( load_optional_class('Class::Load::VersionCheck', {-version => 43}), 1,
     'VersionCheck (with too-high version) => 0');
 is( load_optional_class('Class::Load::VersionCheck', {-version => 41}), 1,
     'VersionCheck (with ok version) => 1');
+
+done_testing;

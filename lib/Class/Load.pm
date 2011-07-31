@@ -3,9 +3,42 @@ use strict;
 use warnings;
 use base 'Exporter';
 use File::Spec;
-use Scalar::Util 'reftype';
 
 our $VERSION = '0.06';
+
+our $IMPLEMENTATION;
+
+BEGIN {
+    $IMPLEMENTATION = $ENV{CLASS_LOAD_IMPLEMENTATION}
+        if exists $ENV{CLASS_LOAD_IMPLEMENTATION};
+
+    my $err;
+    if ($IMPLEMENTATION) {
+        if (!eval "require Class::Load::$IMPLEMENTATION; 1") {
+            require Carp;
+            Carp::croak("Could not load Class::Load::$IMPLEMENTATION: $@");
+        }
+    }
+    else {
+        for my $impl ('XS', 'PP') {
+            if (eval "require Class::Load::$impl; 1;") {
+                $IMPLEMENTATION = $impl;
+                last;
+            }
+            else {
+                $err .= $@;
+            }
+        }
+    }
+
+    if (!$IMPLEMENTATION) {
+        require Carp;
+        Carp::croak("Could not find a suitable Class::Load implementation: $err");
+    }
+
+    my $impl = "Class::Load::$IMPLEMENTATION";
+    *is_class_loaded = $impl->can('is_class_loaded');
+}
 
 our @EXPORT_OK = qw/load_class load_optional_class try_load_class is_class_loaded/;
 our %EXPORT_TAGS = (
@@ -13,12 +46,6 @@ our %EXPORT_TAGS = (
 );
 
 our $ERROR;
-
-BEGIN {
-    *IS_RUNNING_ON_5_10 = ($] < 5.009_005)
-        ? sub () { 0 }
-        : sub () { 1 };
-}
 
 sub load_class {
     my $class   = shift;
@@ -114,74 +141,6 @@ sub _is_valid_class_name {
 
     return 1 if $class =~ /^\w+(?:::\w+)*$/;
 
-    return 0;
-}
-
-sub is_class_loaded {
-    my $class   = shift;
-    my $options = shift;
-
-    my $loaded = _is_class_loaded($class);
-
-    return $loaded if ! $loaded;
-    return $loaded unless $options && $options->{-version};
-
-    return eval {
-        $class->VERSION($options->{-version});
-        1;
-    } ? 1 : 0;
-}
-
-sub _is_class_loaded {
-    my $class = shift;
-
-    return 0 unless _is_valid_class_name($class);
-
-    # walk the symbol table tree to avoid autovififying
-    # \*{${main::}{"Foo::"}} == \*main::Foo::
-
-    my $pack = \*::;
-    foreach my $part (split('::', $class)) {
-        return 0 unless exists ${$$pack}{"${part}::"};
-        $pack = \*{${$$pack}{"${part}::"}};
-    }
-
-    # We used to check in the package stash, but it turns out that
-    # *{${$$package}{VERSION}{SCALAR}} can end up pointing to a
-    # reference to undef. It looks
-
-    my $version = do {
-        no strict 'refs';
-        ${$class . '::VERSION'};
-    };
-
-    return 1 if ! ref $version && defined $version;
-    # Sometimes $VERSION ends up as a reference to undef (weird)
-    return 1 if ref $version && reftype $version eq 'SCALAR' && defined ${$version};
-
-    return 1 if exists ${$$pack}{ISA}
-             && defined *{${$$pack}{ISA}}{ARRAY};
-
-    # check for any method
-    foreach ( keys %{$$pack} ) {
-        next if substr($_, -2, 2) eq '::';
-
-        my $glob = ${$$pack}{$_} || next;
-
-        # constant subs
-        if ( IS_RUNNING_ON_5_10 ) {
-            my $ref = ref($glob);
-            return 1 if $ref eq 'SCALAR' || $ref eq 'REF';
-        }
-
-        # stubs
-        my $refref = ref(\$glob);
-        return 1 if $refref eq 'SCALAR';
-
-        return 1 if defined *{$glob}{CODE};
-    }
-
-    # fail
     return 0;
 }
 

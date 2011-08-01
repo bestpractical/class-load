@@ -72,7 +72,9 @@ sub load_first_existing_class {
     for my $class (@{$classes}) {
         my ($name, $options) = @{$class};
 
-        return $name if is_class_loaded($name, $options);
+        # We need to be careful not to pass an undef $options to this sub,
+        # since the XS version will blow up if that happens.
+        return $name if is_class_loaded($name, ($options ? $options : ()));
 
         my ($res, $e) = try_load_class($name, $options);
 

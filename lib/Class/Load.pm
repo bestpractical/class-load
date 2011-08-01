@@ -2,6 +2,7 @@ package Class::Load;
 use strict;
 use warnings;
 use base 'Exporter';
+use Data::OptList 'mkopt';
 use File::Spec;
 
 our $VERSION = '0.06';
@@ -40,7 +41,7 @@ BEGIN {
     *is_class_loaded = $impl->can('is_class_loaded');
 }
 
-our @EXPORT_OK = qw/load_class load_optional_class try_load_class is_class_loaded/;
+our @EXPORT_OK = qw/load_class load_optional_class try_load_class is_class_loaded load_first_existing_class/;
 our %EXPORT_TAGS = (
     all => \@EXPORT_OK,
 );
@@ -57,17 +58,82 @@ sub load_class {
     _croak($e);
 }
 
-sub _check_version {
-    my $class = shift;
-    my $version = shift;
+sub load_first_existing_class {
+    my $classes = Data::OptList::mkopt(\@_)
+        or return;
 
-    $class->VERSION($version);
+    foreach my $class (@{$classes}) {
+        unless (_is_valid_class_name($class->[0])) {
+            my $display = defined($class->[0]) ? $class->[0] : 'undef';
+            _croak("Invalid class name ($display)");
+        }
+    }
+
+    for my $class (@{$classes}) {
+        my ($name, $options) = @{$class};
+
+        return $name if is_class_loaded($name, $options);
+
+        my ($res, $e) = try_load_class($name, $options);
+
+        return $name if $res;
+
+        my $file = _mod2pm($name);
+
+        next if $e =~ /^Can't locate \Q$file\E in \@INC/;
+        next
+            if $options
+                && defined $options->{-version}
+                && $e =~ _version_fail_re($name, $options->{-version});
+
+        _croak("Couldn't load class ($name) because: $e");
+    }
+
+    my @list = map {
+        $_->[0]
+            . ( $_->[1] && defined $_->[1]{-version}
+            ? " (version >= $_->[1]{-version})"
+            : q{} )
+    } @{$classes};
+
+    my $err
+        .= q{Can't locate }
+        . _or_list(@list)
+        . " in \@INC (\@INC contains: @INC).";
+    _croak($err);
+}
+
+sub _version_fail_re {
+    my $name = shift;
+    my $vers = shift;
+
+    return qr/\Q$name\E version \Q$vers\E required--this is only version/;
+}
+
+sub _or_list {
+    return $_[0] if @_ == 1;
+
+    return join ' or ', @_ if @_ ==2;
+
+    my $last = pop;
+
+    my $list = join ', ', @_;
+    $list .= ', or ' . $last;
+
+    return $list;
 }
 
 sub load_optional_class {
-    my $class = shift;
-    # If success, then we report "Its there"
-    return 1 if try_load_class($class);
+    my $class   = shift;
+    my $options = shift;
+
+    my ($res, $e) = try_load_class($class, $options);
+    return 1 if $res;
+
+    return 0
+        if $options
+            && defined $options->{-version}
+            && $e =~ _version_fail_re($class, $options->{-version});
 
     # My testing says that if its in INC, the file definitely exists
     # on disk. In all versions of Perl. The value isn't reliable,
@@ -230,6 +296,18 @@ implementation.
 
 Like C<load_class>, you can pass a C<-version> in C<%options>. If the version
 is not sufficient, then this subroutine will return false.
+
+=head2 load_first_existing_class Class::Name, \%options, ...
+
+This attempts to load the first loadable class in the list of classes
+given. Each class name can be followed by an options hash reference.
+
+If any one of the classes loads and passes the optional version check, that
+class name will be returned. If I<none> of the classes can be loaded (or none
+pass their version check), then an error will be thrown.
+
+If, when attempting to load a class, it fails to load because of a syntax
+error, then an error will be thrown immediately.
 
 =head2 load_optional_class Class::Name, \%options -> 0|1
 

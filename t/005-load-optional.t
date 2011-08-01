@@ -35,7 +35,7 @@ is( load_optional_class('Class::Load::OK'), 1 , 'Existing Class => 1');
 is( load_optional_class('Class::Load::IDONOTEXIST'), 0, 'Missing Class => 0');
 
 is( load_optional_class('Class::Load::VersionCheck'), 1, 'VersionCheck => 1');
-is( load_optional_class('Class::Load::VersionCheck', {-version => 43}), 1,
+is( load_optional_class('Class::Load::VersionCheck', {-version => 43}), 0,
     'VersionCheck (with too-high version) => 0');
 is( load_optional_class('Class::Load::VersionCheck', {-version => 41}), 1,
     'VersionCheck (with ok version) => 1');

@@ -49,4 +49,8 @@ like( exception {
     load_class('Class::Load::VersionCheck2', { -version => 43 })
 }, qr/^Class::Load::VersionCheck2 version 43 required/);
 
+like( exception {
+    load_class('__PACKAGE__')
+}, qr/__PACKAGE__\.pm.*\@INC/, 'errors sanely on __PACKAGE__.pm' );
+
 done_testing;

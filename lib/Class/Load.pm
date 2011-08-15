@@ -38,6 +38,10 @@ BEGIN {
 
     my $impl = "Class::Load::$IMPLEMENTATION";
     *is_class_loaded = $impl->can('is_class_loaded');
+
+    sub _implementation {
+        return $IMPLEMENTATION;
+    }
 }
 
 our @EXPORT_OK = qw/load_class load_optional_class try_load_class is_class_loaded load_first_existing_class/;

@@ -2,7 +2,7 @@ package Class::Load::PP;
 
 use strict;
 use warnings;
-use Scalar::Util 'reftype';
+use Scalar::Util 'blessed', 'reftype';
 
 BEGIN {
     *IS_RUNNING_ON_5_10 = ($] < 5.009_005)
@@ -48,9 +48,13 @@ sub _is_class_loaded {
         ${$class . '::VERSION'};
     };
 
-    return 1 if ! ref $version && defined $version;
-    # Sometimes $VERSION ends up as a reference to undef (weird)
-    return 1 if ref $version && reftype $version eq 'SCALAR' && defined ${$version};
+    if ( defined $version) {
+        return 1 if ! ref $version;
+        # Sometimes $VERSION ends up as a reference to undef (weird)
+        return 1 if ref $version && reftype $version eq 'SCALAR' && defined ${$version};
+        # a version object
+        return 1 if blessed $version;
+    }
 
     return 1 if exists ${$$pack}{ISA}
              && defined *{${$$pack}{ISA}}{ARRAY};

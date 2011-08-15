@@ -37,6 +37,14 @@ do {
 };
 ok(is_class_loaded('Class::Load::WithVERSION'), "class that defines \$VERSION is loaded");
 # }}}
+# $VERSION is a version object (yes) {{{
+do {
+    package Class::Load::WithVersionObject;
+    use version;
+    our $VERSION = version->new(1);
+};
+ok(is_class_loaded('Class::Load::WithVersionObject'), 'when $VERSION contains a version object, we still return true');
+# }}}
 # method (yes) {{{
 do {
     package Class::Load::WithMethod;

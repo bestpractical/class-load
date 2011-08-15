@@ -1,5 +1,19 @@
 {{$NEXT}}
 
+- All this module's subroutines now accept optional parameters for a module so
+  you can write something like - load_class( 'Foo', { -version => 42 } )
+
+- There is now a Class::Load::XS distro available on CPAN which implements
+  some of this module's code in XS for speed. This code was originally written
+  by Goro Fuji and Florian Ragwitz for Class::MOP. You need to install this
+  distro explicitly if you want the XS implementation.
+
+- Added a load_first_existing_class subroutine based, mostly borrowed from
+  Class::MOP.
+
+- Fixed a bug where a package with a version object in its $VERSION would not
+  be seen as loaded. Reported by Chris Prather.
+
 0.06     2010-11-15
 
 - BACK COMPAT CHANGE: Remove $Class::Load::ERROR in favor of a contextual

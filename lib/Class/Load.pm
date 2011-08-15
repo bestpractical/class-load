@@ -278,8 +278,7 @@ version, then this subroutine will call C<< Class::Name->VERSION(
 $options{-version} ) >> internally, which will throw an error if the class's
 version is not equal to or greater than the version you requested.
 
-=head2 try_load_class Class::Name, \%options -> 0|1
-=head2 try_load_class Class::Name -> (0|1, error message)
+=head2 try_load_class Class::Name, \%options -> (0|1, error message)
 
 Returns 1 if the class was loaded, 0 if it was not. If the class was not
 loaded, the error will be returned as a second return value in list context.

@@ -7,4 +7,6 @@ use lib 't/lib';
 
 use_ok 'Test::Class::Load';
 
+diag('Using ' . Class::Load->_implementation() . ' implementation' );
+
 done_testing;

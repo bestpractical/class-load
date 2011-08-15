@@ -5,7 +5,6 @@ use base 'Exporter';
 use Data::OptList 'mkopt';
 use File::Spec;
 
-our $VERSION = '0.06';
 
 our $IMPLEMENTATION;
 
@@ -226,11 +225,9 @@ sub _croak {
 
 1;
 
+# ABSTRACT: a working (require "Class::Name") and more
+
 __END__
-
-=head1 NAME
-
-Class::Load - a working (require "Class::Name") and more
 
 =head1 SYNOPSIS
 
@@ -357,19 +354,6 @@ This module was designed to be used anywhere you have
 C<if (eval "require $module"; 1)>, which occurs in many large projects.
 
 =back
-
-=head1 AUTHOR
-
-Shawn M Moore, C<< <sartak at bestpractical.com> >>
-
-The implementation of C<is_class_loaded> has been taken from L<Class::MOP>.
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright 2008-2010 Best Practical Solutions.
-
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
 
 =cut
 

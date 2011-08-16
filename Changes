@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.08     2011-08-15
+
 - The previous version was missing a prereq declaration for
   Data::OptList. Reported by Daisuke Maki and Mark Hedges. RT #70285.
 

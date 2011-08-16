@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+- The previous version was missing a prereq declaration for
+  Data::OptList. Reported by Daisuke Maki and Mark Hedges. RT #70285.
+
 0.07     2011-08-15
 
 - All this module's subroutines now accept optional parameters for a module so

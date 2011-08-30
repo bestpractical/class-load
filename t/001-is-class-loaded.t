@@ -20,17 +20,12 @@ do {
 };
 ok(is_class_loaded('Class::Load::WithISA'), "class that defines \@ISA is loaded");
 # }}}
-# $ISA (yes, sadly, but only with the PP version) {{{
+# $ISA (no) {{{
 do {
     package Class::Load::WithScalarISA;
     our $ISA = 'Class::Load';
 };
-if ($Class::Load::IMPLEMENTATION eq 'PP') {
-    ok(is_class_loaded('Class::Load::WithScalarISA'), "class that defines \$ISA is loaded");
-}
-else {
-    ok(!is_class_loaded('Class::Load::WithScalarISA'), "class that defines \$ISA is not loaded");
-}
+ok(!is_class_loaded('Class::Load::WithScalarISA'), "class that defines \$ISA is not loaded");
 # }}}
 # $VERSION (yes) {{{
 do {

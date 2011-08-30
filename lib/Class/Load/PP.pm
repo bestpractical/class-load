@@ -56,8 +56,10 @@ sub _is_class_loaded {
         return 1 if blessed $version;
     }
 
-    return 1 if exists ${$$pack}{ISA}
-             && defined *{${$$pack}{ISA}}{ARRAY};
+    if (exists ${$$pack}{ISA}) {
+        my $isa = *{${$$pack}{ISA}}{ARRAY};
+        return 1 if defined $isa && @$isa;
+    }
 
     # check for any method
     foreach ( keys %{$$pack} ) {

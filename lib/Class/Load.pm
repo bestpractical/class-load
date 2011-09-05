@@ -151,8 +151,19 @@ sub load_optional_class {
     _croak($ERROR);
 }
 
+# XXX Module::Runtime?
+sub _is_module_name {
+    my $name = shift;
+    return if !defined($name);
+    return if ref($name);
+    return $name =~ /\A[0-9A-Z_a-z]+(?:::[0-9A-Z_a-z]+)*\z/;
+}
+
 sub _mod2pm {
     my $class = shift;
+
+    _croak("$class is not a module name")
+        unless _is_module_name($class);
     $class =~ s+::+/+g;
     return "$class.pm";
 }

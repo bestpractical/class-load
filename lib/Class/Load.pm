@@ -5,6 +5,7 @@ use base 'Exporter';
 use Data::OptList 'mkopt';
 use File::Spec;
 use Package::Stash;
+use Try::Tiny;
 
 
 our $IMPLEMENTATION;
@@ -174,11 +175,13 @@ sub try_load_class {
         # we want to return the error message for a failed version check, but
         # is_class_loaded just returns true/false.
         return 1 unless $options && defined $options->{-version};
-        return 1 if eval {
+        return try {
             $class->VERSION($options->{-version});
             1;
+        }
+        catch {
+            _error($_);
         };
-        return _error();
     }
 
     my $file = _mod2pm($class);
@@ -194,15 +197,16 @@ sub try_load_class {
     # 5.10, as instead of dying with "Compilation failed",
     # it will die with the actual error, and thats a win-win.
     delete $INC{$file};
-    return 1 if eval {
+    return try {
         local $SIG{__DIE__} = 'DEFAULT';
         require $file;
         $class->VERSION($options->{-version})
             if $options && defined $options->{-version};
         1;
+    }
+    catch {
+        _error($_);
     };
-
-    return _error();
 }
 
 sub _is_valid_class_name {
@@ -218,9 +222,9 @@ sub _is_valid_class_name {
 }
 
 sub _error {
-    $ERROR = $@;
+    $ERROR = shift;
     return 0 unless wantarray;
-    return 0, $@;
+    return 0, $ERROR;
 }
 
 sub _croak {

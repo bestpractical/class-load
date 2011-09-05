@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use Package::Stash;
 use Scalar::Util 'blessed', 'reftype';
+use Try::Tiny;
 
 sub is_class_loaded {
     my $class   = shift;
@@ -14,10 +15,13 @@ sub is_class_loaded {
     return $loaded if ! $loaded;
     return $loaded unless $options && $options->{-version};
 
-    return eval {
+    return try {
         $class->VERSION($options->{-version});
         1;
-    } ? 1 : 0;
+    }
+    catch {
+        0;
+    };
 }
 
 sub _is_class_loaded {

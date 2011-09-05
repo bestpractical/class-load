@@ -3,7 +3,6 @@ use strict;
 use warnings;
 use base 'Exporter';
 use Data::OptList 'mkopt';
-use File::Spec;
 use Package::Stash;
 use Try::Tiny;
 
@@ -154,13 +153,8 @@ sub load_optional_class {
 
 sub _mod2pm {
     my $class = shift;
-    # see rt.perl.org #19213
-    my @parts = split '::', $class;
-    my $file = $^O eq 'MSWin32'
-             ? join '/', @parts
-             : File::Spec->catfile(@parts);
-    $file .= '.pm';
-    return $file;
+    $class =~ s+::+/+g;
+    return "$class.pm";
 }
 
 sub try_load_class {

@@ -4,6 +4,7 @@ use warnings;
 use base 'Exporter';
 use Data::OptList 'mkopt';
 use File::Spec;
+use Package::Stash;
 
 
 our $IMPLEMENTATION;
@@ -37,7 +38,8 @@ BEGIN {
     }
 
     my $impl = "Class::Load::$IMPLEMENTATION";
-    *is_class_loaded = $impl->can('is_class_loaded');
+    my $stash = Package::Stash->new(__PACKAGE__);
+    $stash->add_symbol('&is_class_loaded' => $impl->can('is_class_loaded'));
 
     sub _implementation {
         return $IMPLEMENTATION;

@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.10     2011-09-06
+
 - Make sure the $@ localization doesn't hide errors - invalid module name
   errors were being suppressed on perls before 5.14. ( Jesse Luehrs )
 

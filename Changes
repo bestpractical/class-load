@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.09     2011-09-05
+
 - Fix is_class_loaded to ignore $ISA (but still look for @ISA) when trying to
   determine whether a class is loaded. ( Jesse Luehrs )
 

@@ -1,5 +1,10 @@
 {{$NEXT}}
 
+- Fix is_class_loaded to ignore $ISA (but still look for @ISA) when trying to
+  determine whether a class is loaded. ( Jesse Luehrs )
+
+- Lots of internals cleanup. ( Jesse Luehrs )
+
 0.08     2011-08-15
 
 - The previous version was missing a prereq declaration for

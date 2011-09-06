@@ -6,7 +6,6 @@ use Data::OptList 'mkopt';
 use Package::Stash;
 use Try::Tiny;
 
-
 our $IMPLEMENTATION;
 
 BEGIN {

@@ -67,7 +67,7 @@ sub load_first_existing_class {
         or return;
 
     foreach my $class (@{$classes}) {
-        unless (_is_valid_class_name($class->[0])) {
+        unless (_is_module_name($class->[0])) {
             my $display = defined($class->[0]) ? $class->[0] : 'undef';
             _croak("Invalid class name ($display)");
         }
@@ -153,6 +153,7 @@ sub load_optional_class {
 # XXX Module::Runtime?
 sub _is_module_name {
     my $name = shift;
+
     return if !defined($name);
     return if ref($name);
     return $name =~ /\A[0-9A-Z_a-z]+(?:::[0-9A-Z_a-z]+)*\z/;
@@ -211,18 +212,6 @@ sub try_load_class {
     catch {
         _error($_);
     };
-}
-
-sub _is_valid_class_name {
-    my $class = shift;
-
-    return 0 if ref($class);
-    return 0 unless defined($class);
-    return 0 unless length($class);
-
-    return 1 if $class =~ /^\w+(?:::\w+)*$/;
-
-    return 0;
 }
 
 sub _error {

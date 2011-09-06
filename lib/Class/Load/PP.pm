@@ -27,7 +27,7 @@ sub is_class_loaded {
 sub _is_class_loaded {
     my $class = shift;
 
-    return 0 unless Class::Load::_is_valid_class_name($class);
+    return 0 unless Class::Load::_is_module_name($class);
 
     my $stash = Package::Stash->new($class);
 

@@ -76,6 +76,9 @@ sub load_first_existing_class {
     for my $class (@{$classes}) {
         my ($name, $options) = @{$class};
 
+        _croak("$name is not a module name")
+            unless _is_module_name($name);
+
         # We need to be careful not to pass an undef $options to this sub,
         # since the XS version will blow up if that happens.
         return $name if is_class_loaded($name, ($options ? $options : ()));
@@ -133,6 +136,9 @@ sub load_optional_class {
     my $class   = shift;
     my $options = shift;
 
+    _croak("$class is not a module name")
+        unless _is_module_name($class);
+
     my ($res, $e) = try_load_class($class, $options);
     return 1 if $res;
 
@@ -162,8 +168,6 @@ sub _is_module_name {
 sub _mod2pm {
     my $class = shift;
 
-    _croak("$class is not a module name")
-        unless _is_module_name($class);
     $class =~ s+::+/+g;
     return "$class.pm";
 }
@@ -171,6 +175,9 @@ sub _mod2pm {
 sub try_load_class {
     my $class   = shift;
     my $options = shift;
+
+    _croak("$class is not a module name")
+        unless _is_module_name($class);
 
     local $@;
     undef $ERROR;

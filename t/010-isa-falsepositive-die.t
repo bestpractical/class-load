@@ -12,7 +12,7 @@ isnt(
         load_optional_class('Class::Load::Error::DieAfterIsa');
     },
     undef,
-    'Loading a broken class breaks'
+    'Class which calls die is reported as an error'
 );
 
 isnt(
@@ -20,5 +20,5 @@ isnt(
         load_optional_class('Class::Load::Error::DieAfterIsa');
     },
     undef,
-    'Loading a broken class breaks(x2)'
+    'Class which calls die is reported as an error (second attempt)'
 );

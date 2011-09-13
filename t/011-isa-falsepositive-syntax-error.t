@@ -12,7 +12,7 @@ isnt(
         load_optional_class('Class::Load::Error::SyntaxErrorAfterIsa');
     },
     undef,
-    'Loading a broken class breaks'
+    'Class with a syntax error causes an error'
 );
 
 isnt(
@@ -20,7 +20,7 @@ isnt(
         load_optional_class('Class::Load::Error::SyntaxErrorAfterIsa');
     },
     undef,
-    'Loading a broken class breaks(x2)'
+    'Class with a syntax error causes an error (second attempt)'
 );
 
 done_testing;

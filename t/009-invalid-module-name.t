@@ -11,5 +11,10 @@ like(
     qr/^Foo:Bar is not a module name/,
     "invalid module name"
 );
+like(
+    exception { load_class('123') },
+    qr/^123 is not a module name/,
+    "invalid module name"
+);
 
 done_testing;

@@ -162,7 +162,7 @@ sub _is_module_name {
 
     return if !defined($name);
     return if ref($name);
-    return $name =~ /\A[0-9A-Z_a-z]+(?:::[0-9A-Z_a-z]+)*\z/;
+    return $name =~ /\A[A-Z_a-z][0-9A-Z_a-z]*(?:::[0-9A-Z_a-z]+)*\z/;
 }
 
 sub _mod2pm {

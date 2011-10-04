@@ -6,15 +6,13 @@ use Test::More 0.88;
 use lib 't/lib';
 use Test::Class::Load 'load_class';
 
-like(
-    exception { load_class('Foo:Bar') },
-    qr/^Foo:Bar is not a module name/,
-    "invalid module name"
-);
-like(
-    exception { load_class('123') },
-    qr/^123 is not a module name/,
-    "invalid module name"
-);
+for my $badname ( 'Foo:Bar', '123', 'Foo::..::..::tmp::bad.pl',
+    '::..::tmp::bad' ) {
+    like(
+        exception { load_class($badname) },
+        qr/^$badname is not a module name/,
+        "invalid module name"
+    );
+}
 
 done_testing;

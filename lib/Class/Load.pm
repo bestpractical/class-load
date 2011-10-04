@@ -3,6 +3,8 @@ use strict;
 use warnings;
 use base 'Exporter';
 use Data::OptList 'mkopt';
+use Module::Runtime qw(check_module_name module_notional_filename
+                       require_module use_module);
 use Package::Stash;
 use Try::Tiny;
 
@@ -14,14 +16,14 @@ BEGIN {
 
     my $err;
     if ($IMPLEMENTATION) {
-        if (!eval "require Class::Load::$IMPLEMENTATION; 1") {
+        if (!try { require_module("Class::Load::$IMPLEMENTATION") }) {
             require Carp;
             Carp::croak("Could not load Class::Load::$IMPLEMENTATION: $@");
         }
     }
     else {
         for my $impl ('XS', 'PP') {
-            if (eval "require Class::Load::$impl; 1;") {
+            if (try { require_module("Class::Load::$impl") }) {
                 $IMPLEMENTATION = $impl;
                 last;
             }
@@ -67,17 +69,11 @@ sub load_first_existing_class {
         or return;
 
     foreach my $class (@{$classes}) {
-        unless (_is_module_name($class->[0])) {
-            my $display = defined($class->[0]) ? $class->[0] : 'undef';
-            _croak("Invalid class name ($display)");
-        }
+        check_module_name($class->[0]);
     }
 
     for my $class (@{$classes}) {
         my ($name, $options) = @{$class};
-
-        _croak("$name is not a module name")
-            unless _is_module_name($name);
 
         # We need to be careful not to pass an undef $options to this sub,
         # since the XS version will blow up if that happens.
@@ -87,7 +83,7 @@ sub load_first_existing_class {
 
         return $name if $res;
 
-        my $file = _mod2pm($name);
+        my $file = module_notional_filename($name);
 
         next if $e =~ /^Can't locate \Q$file\E in \@INC/;
         next
@@ -136,8 +132,7 @@ sub load_optional_class {
     my $class   = shift;
     my $options = shift;
 
-    _croak("$class is not a module name")
-        unless _is_module_name($class);
+    check_module_name($class);
 
     my ($res, $e) = try_load_class($class, $options);
     return 1 if $res;
@@ -150,34 +145,17 @@ sub load_optional_class {
     # My testing says that if its in INC, the file definitely exists
     # on disk. In all versions of Perl. The value isn't reliable,
     # but it existing is.
-    my $file = _mod2pm( $class );
+    my $file = module_notional_filename($class);
     return 0 unless exists $INC{$file};
 
     _croak($ERROR);
-}
-
-# XXX Module::Runtime?
-sub _is_module_name {
-    my $name = shift;
-
-    return if !defined($name);
-    return if ref($name);
-    return $name =~ /\A[A-Z_a-z][0-9A-Z_a-z]*(?:::[0-9A-Z_a-z]+)*\z/;
-}
-
-sub _mod2pm {
-    my $class = shift;
-
-    $class =~ s+::+/+g;
-    return "$class.pm";
 }
 
 sub try_load_class {
     my $class   = shift;
     my $options = shift;
 
-    _croak("$class is not a module name")
-        unless _is_module_name($class);
+    check_module_name($class);
 
     local $@;
     undef $ERROR;
@@ -196,7 +174,7 @@ sub try_load_class {
         };
     }
 
-    my $file = _mod2pm($class);
+    my $file = module_notional_filename($class);
     # This says "our diagnostics of the package
     # say perl's INC status about the file being loaded are
     # wrong", so we delete it from %INC, so when we call require(),
@@ -211,9 +189,12 @@ sub try_load_class {
     delete $INC{$file};
     return try {
         local $SIG{__DIE__} = 'DEFAULT';
-        require $file;
-        $class->VERSION($options->{-version})
-            if $options && defined $options->{-version};
+        if ($options && defined $options->{-version}) {
+            use_module($class, $options->{-version});
+        }
+        else {
+            require_module($class);
+        }
         1;
     }
     catch {

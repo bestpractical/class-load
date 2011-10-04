@@ -26,7 +26,7 @@ like(
     exception {
         load_first_existing_class( 'Foo', 'bad name' );
     },
-    qr/^\QInvalid class name (bad name)/,
+    qr/^\Q`bad name' is not a module name/,
     'load_first_existing_class balks on bad class name'
 );
 

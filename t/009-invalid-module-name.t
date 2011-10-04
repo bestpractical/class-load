@@ -18,7 +18,7 @@ my @bad = qw(
 for my $name (@bad) {
     like(
         exception { load_class($name) },
-        qr/^\Q$name\E is not a module name/,
+        qr/^\Q`$name' is not a module name/,
         "invalid module name - $name"
     );
 }

@@ -2,6 +2,9 @@
 
 - Don't accept package names that start with a digit. ( Jesse Luehrs )
 
+- Rewrote some of the guts to use Module::Runtime, rather than reimplementing
+  its functionality. ( Jesse Luehrs )
+
 0.10     2011-09-06
 
 - Make sure the $@ localization doesn't hide errors - invalid module name

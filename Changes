@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.11     2011-10-04
+
 - Don't accept package names that start with a digit. ( Jesse Luehrs )
 
 - Rewrote some of the guts to use Module::Runtime, rather than reimplementing

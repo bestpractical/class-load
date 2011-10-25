@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+- Depend on Module::Runtime 0.011+. This fixes problems with Catalyst under
+  Perl 5.8 and 5.10.
+
 0.11     2011-10-04
 
 - Don't accept package names that start with a digit. ( Jesse Luehrs )

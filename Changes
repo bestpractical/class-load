@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.12     2011-10-25
+
 - Depend on Module::Runtime 0.011+. This fixes problems with Catalyst under
   Perl 5.8 and 5.10.
 

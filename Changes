@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.13     2011-12-22
+
 - Fix some bugs with our use of Try::Tiny. This could cause warnings on some
   systems with Class::Load::XS wasn't installed. Fixes RT #72345.
 

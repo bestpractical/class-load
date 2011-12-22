@@ -4,7 +4,10 @@ use warnings;
 use Test::More 0.88;
 use Test::Fatal;
 
-$Class::Load::IMPLEMENTATION = 'Bad';
+{
+    no warnings 'once';
+    $Class::Load::IMPLEMENTATION = 'Bad';
+}
 
 {
     like(

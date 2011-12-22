@@ -16,20 +16,25 @@ BEGIN {
 
     my $err;
     if ($IMPLEMENTATION) {
-        if (!try { require_module("Class::Load::$IMPLEMENTATION") }) {
-            require Carp;
-            Carp::croak("Could not load Class::Load::$IMPLEMENTATION: $@");
+        try {
+            require_module("Class::Load::$IMPLEMENTATION");
         }
+        catch {
+            require Carp;
+            Carp::croak("Could not load Class::Load::$IMPLEMENTATION: $_");
+        };
     }
     else {
         for my $impl ('XS', 'PP') {
-            if (try { require_module("Class::Load::$impl") }) {
+            try {
+                require_module("Class::Load::$impl");
                 $IMPLEMENTATION = $impl;
-                last;
             }
-            else {
-                $err .= $@;
-            }
+            catch {
+                $err .= $_;
+            };
+
+            last if $IMPLEMENTATION;
         }
     }
 

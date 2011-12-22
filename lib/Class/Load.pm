@@ -3,8 +3,12 @@ use strict;
 use warnings;
 use base 'Exporter';
 use Data::OptList 'mkopt';
-use Module::Runtime qw(check_module_name module_notional_filename
-                       require_module use_module);
+use Module::Runtime 0.011 qw(
+    check_module_name
+    module_notional_filename
+    require_module
+    use_module
+);
 use Package::Stash;
 use Try::Tiny;
 

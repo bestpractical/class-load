@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+- Fix some bugs with our use of Try::Tiny. This could cause warnings on some
+  systems with Class::Load::XS wasn't installed. Fixes RT #72345.
+
 0.12     2011-10-25
 
 - Depend on Module::Runtime 0.011+. This fixes problems with Catalyst under

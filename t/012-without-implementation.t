@@ -8,7 +8,7 @@ use Test::Requires {
     'Test::Without::Module' => 0,
 };
 
-use Test::Without::Module qw( Class::Load::PP Class::Load::XS);
+use Test::Without::Module qw( Class::Load::PP Class::Load::XS );
 
 {
     like(

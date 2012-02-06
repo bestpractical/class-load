@@ -1,5 +1,15 @@
 {{$NEXT}}
 
+- Use Module::Implementation to handle loading the XS or PP versions of the
+  code. Using this module fixes a few bugs.
+
+- Under taint mode, setting an implementation in the CLASS_LOAD_IMPLEMENTATION
+  env var caused a taint error.
+
+- An invalid value in the CLASS_LOAD_IMPLEMENTATION env var is now detected
+  and reported immediately. No attempt is made to load an invalid
+  implementation.
+
 0.13     2011-12-22
 
 - Fix some bugs with our use of Try::Tiny. This could cause warnings on some

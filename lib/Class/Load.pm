@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use base 'Exporter';
 use Data::OptList 'mkopt';
+use Module::Implementation;
 use Module::Runtime 0.011 qw(
     check_module_name
     module_notional_filename
@@ -12,48 +13,13 @@ use Module::Runtime 0.011 qw(
 use Package::Stash;
 use Try::Tiny;
 
-our $IMPLEMENTATION;
+{
+    my $loader = Module::Implementation::build_loader_sub(
+        implementations => [ 'XS', 'PP' ],
+        symbols         => ['is_class_loaded'],
+    );
 
-BEGIN {
-    $IMPLEMENTATION = $ENV{CLASS_LOAD_IMPLEMENTATION}
-        if exists $ENV{CLASS_LOAD_IMPLEMENTATION};
-
-    my $err;
-    if ($IMPLEMENTATION) {
-        try {
-            require_module("Class::Load::$IMPLEMENTATION");
-        }
-        catch {
-            require Carp;
-            Carp::croak("Could not load Class::Load::$IMPLEMENTATION: $_");
-        };
-    }
-    else {
-        for my $impl ('XS', 'PP') {
-            try {
-                require_module("Class::Load::$impl");
-                $IMPLEMENTATION = $impl;
-            }
-            catch {
-                $err .= $_;
-            };
-
-            last if $IMPLEMENTATION;
-        }
-    }
-
-    if (!$IMPLEMENTATION) {
-        require Carp;
-        Carp::croak("Could not find a suitable Class::Load implementation: $err");
-    }
-
-    my $impl = "Class::Load::$IMPLEMENTATION";
-    my $stash = Package::Stash->new(__PACKAGE__);
-    $stash->add_symbol('&is_class_loaded' => $impl->can('is_class_loaded'));
-
-    sub _implementation {
-        return $IMPLEMENTATION;
-    }
+    $loader->();
 }
 
 our @EXPORT_OK = qw/load_class load_optional_class try_load_class is_class_loaded load_first_existing_class/;

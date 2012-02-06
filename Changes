@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.14     2012-02-06
+
 - Use Module::Implementation to handle loading the XS or PP versions of the
   code. Using this module fixes a few bugs.
 

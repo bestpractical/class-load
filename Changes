@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+- Small test changes to accomodate latest version of
+  Module::Implementation. There's no need to upgrade if you're already using
+  0.14
+
 0.14     2012-02-06
 
 - Use Module::Implementation to handle loading the XS or PP versions of the

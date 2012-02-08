@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use base 'Exporter';
 use Data::OptList 'mkopt';
-use Module::Implementation;
+use Module::Implementation 0.04;
 use Module::Runtime 0.011 qw(
     check_module_name
     module_notional_filename

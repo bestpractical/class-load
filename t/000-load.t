@@ -5,8 +5,12 @@ use Test::More 0.88;
 
 use lib 't/lib';
 
+use Module::Implementation 0.04 ();
+
 use_ok 'Test::Class::Load';
 
-diag('Using ' . Class::Load->_implementation() . ' implementation' );
+diag(     'Using '
+        . Module::Implementation::implementation_for('Class::Load')
+        . ' implementation' );
 
 done_testing;

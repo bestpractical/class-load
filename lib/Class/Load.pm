@@ -90,6 +90,13 @@ sub _version_fail_re {
     return qr/\Q$name\E version \Q$vers\E required--this is only version/;
 }
 
+sub _nonexistent_fail_re {
+    my $name = shift;
+
+    my $file = module_notional_filename($name);
+    return qr/Can't locate \Q$file\E in \@INC/;
+}
+
 sub _or_list {
     return $_[0] if @_ == 1;
 
@@ -117,11 +124,8 @@ sub load_optional_class {
             && defined $options->{-version}
             && $e =~ _version_fail_re($class, $options->{-version});
 
-    # My testing says that if its in INC, the file definitely exists
-    # on disk. In all versions of Perl. The value isn't reliable,
-    # but it existing is.
-    my $file = module_notional_filename($class);
-    return 0 unless exists $INC{$file};
+    return 0
+        if $e =~ _nonexistent_fail_re($class);
 
     _croak($ERROR);
 }

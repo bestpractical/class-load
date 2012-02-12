@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+- Require Module::Runtime 0.012, which has a number of useful bug fixes.
+
+
 0.15     2012-02-08
 
 - Small test changes to accomodate latest version of

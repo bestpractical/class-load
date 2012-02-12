@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.16     2012-02-12
+
 - Require Module::Runtime 0.012, which has a number of useful bug fixes.
 
 

@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.17     2012-02-12
+
 - A bug in Class::Load caused test failures when Module::Runtime 0.012 was
   used with Perl 5.8.x. Reported by Zefram. RT #74897. ( Jesse Luehrs )
 

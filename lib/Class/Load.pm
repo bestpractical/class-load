@@ -10,7 +10,6 @@ use Module::Runtime 0.012 qw(
     require_module
     use_module
 );
-use Package::Stash;
 use Try::Tiny;
 
 {

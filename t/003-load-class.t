@@ -14,25 +14,31 @@ like(
         load_class('Class::Load::Nonexistent');
     },
     qr{^Can't locate Class/Load/Nonexistent.pm in \@INC},
-    'Nonexistent exception'
+    'threw exception for nonexistent class'
 );
 
 like(
     $Class::Load::ERROR,
     qr{^Can't locate Class/Load/Nonexistent.pm in \@INC},
-    'Nonexistent ERROR message',
+    'ERROR message for nonexistent class',
 );
 
 ok( load_class('Class::Load::OK'), 'loaded class OK' );
-is( $Class::Load::ERROR, undef );
+is( $Class::Load::ERROR, undef, 'ERROR is undef' );
 
 like(
     exception {
         load_class('Class::Load::SyntaxError');
     },
-    qr{^Missing right curly or square bracket at }
+    qr{^Missing right curly or square bracket at },
+    'exception contains syntax error message'
 );
-like( $Class::Load::ERROR, qr{^Missing right curly or square bracket at } );
+
+like(
+    $Class::Load::ERROR,
+    qr{^Missing right curly or square bracket at },
+    'ERROR contains syntax error message'
+);
 
 ok( is_class_loaded('Class::Load::OK') );
 ok( !is_class_loaded('Class::Load::Nonexistent') );
@@ -52,7 +58,8 @@ like(
     exception {
         load_class( 'Class::Load::VersionCheck', { -version => 43 } );
     },
-    qr/^Class::Load::VersionCheck version 43 required/
+    qr/^Class::Load::VersionCheck version 43 required/,
+    'got expected error for load_class with explicit version'
 );
 
 ok(
@@ -69,7 +76,8 @@ like(
     exception {
         load_class( 'Class::Load::VersionCheck2', { -version => 43 } );
     },
-    qr/^Class::Load::VersionCheck2 version 43 required/
+    qr/^Class::Load::VersionCheck2 version 43 required/,
+    'got expected error for load_class with explicit version (after class has been loaded into memory)'
 );
 
 like(

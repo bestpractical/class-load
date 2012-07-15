@@ -7,18 +7,20 @@ use Test::Class::Load ':all';
 use Test::Fatal;
 
 ok(load_class('Class::Load::OK'), "loaded class OK");
-is($Class::Load::ERROR, undef, 'ERROR undef');
+is($Class::Load::ERROR, undef, 'ERROR is undef');
 
-like( exception {
-    load_class('Class::Load::Nonexistent')
-}, qr{^Can't locate Class/Load/Nonexistent.pm in \@INC},
-   'Nonexistant exception'
+like(
+    exception {
+        load_class('Class::Load::Nonexistent');
+    },
+    qr{^Can't locate Class/Load/Nonexistent.pm in \@INC},
+    'Nonexistent exception'
 );
 
 like(
    $Class::Load::ERROR,
    qr{^Can't locate Class/Load/Nonexistent.pm in \@INC},
-   'Nonexistant ERROR message',
+   'Nonexistent ERROR message',
 );
 
 ok(load_class('Class::Load::OK'), "loaded class OK");

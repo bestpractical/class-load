@@ -1,7 +1,7 @@
 {{$NEXT}}
 
 - The load_class() subroutine now returns the class name on success. Requested
-  by Caleb Cushing.
+  by Caleb Cushing. RT #76931.
 
 - Exceptions and errors from Class::Load no longer contain references to line
   numbers in Class::Load or Module::Runtime. This applies to exceptions thrown

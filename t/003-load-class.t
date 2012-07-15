@@ -6,7 +6,7 @@ use lib 't/lib';
 use Test::Class::Load ':all';
 use Test::Fatal;
 
-ok(load_class('Class::Load::OK'), "loaded class OK");
+ok(load_class('Class::Load::OK'), 'loaded class OK');
 is($Class::Load::ERROR, undef, 'ERROR is undef');
 
 like(
@@ -23,7 +23,7 @@ like(
    'Nonexistent ERROR message',
 );
 
-ok(load_class('Class::Load::OK'), "loaded class OK");
+ok(load_class('Class::Load::OK'), 'loaded class OK');
 is($Class::Load::ERROR, undef);
 
 like( exception {
@@ -40,7 +40,7 @@ do {
     sub inlined { 1 }
 };
 
-ok(load_class('Class::Load::Inlined'), "loaded class Inlined");
+ok(load_class('Class::Load::Inlined'), 'loaded class Inlined');
 is($Class::Load::ERROR, undef);
 ok(is_class_loaded('Class::Load::Inlined'));
 
@@ -49,10 +49,10 @@ like( exception {
 }, qr/^Class::Load::VersionCheck version 43 required/);
 
 ok(load_class('Class::Load::VersionCheck', { -version => 41 }),
-   "loaded class with version check");
+   'loaded class with version check');
 
 ok(load_class('Class::Load::VersionCheck2', { -version => 41 }),
-   "loaded class with version check");
+   'loaded class with version check');
 
 like( exception {
     load_class('Class::Load::VersionCheck2', { -version => 43 })

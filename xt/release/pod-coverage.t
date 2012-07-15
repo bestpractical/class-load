@@ -26,12 +26,10 @@ for my $module ( sort @modules ) {
         }
     }
 
-    push @{$trustme}, qr/^BUILD$/;
-
     pod_coverage_ok(
-        $module, {
-            coverage_class => 'Pod::Coverage::Moose',
-            trustme        => $trustme,
+        $module,
+        {
+            trustme => $trustme,
         },
         "Pod coverage for $module"
     );

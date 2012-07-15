@@ -2,6 +2,8 @@
 
 0.19     2012-07-15
 
+- Uploaded by Dave Rolsky, not realizing 0.19 was already used
+
 - The load_class() subroutine now returns the class name on success. Requested
   by Caleb Cushing. RT #76931.
 
@@ -13,6 +15,12 @@
 - Exceptions are now croaked properly so they appear to come from the calling
   code, not from an internal subroutine. This makes the exceptions look more
   like the ones thrown by Perl's require. RT #68663.
+
+0.19     2012-04-03
+
+- Uploaded by doy (Jesse Luehrs)
+
+- No changes, reupload to fix indexing.
 
 0.18     2012-02-18
 

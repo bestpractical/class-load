@@ -12,7 +12,6 @@
   code, not from an internal subroutine. This makes the exceptions look more
   like the ones thrown by Perl's require. RT #68663.
 
-
 0.18     2012-02-18
 
 - Require Package::Stash 0.14+. Fixes RT #75095. Reported by Zefram.

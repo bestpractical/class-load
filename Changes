@@ -1,5 +1,7 @@
 {{$NEXT}}
 
+0.19     2012-07-15
+
 - The load_class() subroutine now returns the class name on success. Requested
   by Caleb Cushing. RT #76931.
 

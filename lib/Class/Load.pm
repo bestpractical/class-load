@@ -33,7 +33,7 @@ sub load_class {
     my $options = shift;
 
     my ($res, $e) = try_load_class($class, $options);
-    return 1 if $res;
+    return $class if $res;
 
     _croak($e);
 }
@@ -242,6 +242,8 @@ The C<%options> hash currently accepts one key, C<-version>. If you specify a
 version, then this subroutine will call C<< Class::Name->VERSION(
 $options{-version} ) >> internally, which will throw an error if the class's
 version is not equal to or greater than the version you requested.
+
+This method will return the name of the class on success.
 
 =head2 try_load_class Class::Name, \%options -> (0|1, error message)
 

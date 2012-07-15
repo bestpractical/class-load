@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+- The load_class() subroutine now returns the class name on success. Requested
+  by Caleb Cushing.
+
 0.18     2012-02-18
 
 - Require Package::Stash 0.14+. Fixes RT #75095. Reported by Zefram.

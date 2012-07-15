@@ -6,7 +6,7 @@ use lib 't/lib';
 use Test::Class::Load ':all';
 use Test::Fatal;
 
-ok( load_class('Class::Load::OK'), 'loaded class OK' );
+is( load_class('Class::Load::OK'), 'Class::Load::OK', 'loaded class OK' );
 is( $Class::Load::ERROR, undef, 'ERROR is undef' );
 
 like(
@@ -50,7 +50,11 @@ do {
     sub inlined { 1 }
 };
 
-ok( load_class('Class::Load::Inlined'), 'loaded class Inlined' );
+is(
+    load_class('Class::Load::Inlined'),
+    'Class::Load::Inlined',
+    'loaded class Inlined'
+);
 is( $Class::Load::ERROR, undef );
 ok( is_class_loaded('Class::Load::Inlined') );
 
@@ -62,13 +66,15 @@ like(
     'got expected error for load_class with explicit version'
 );
 
-ok(
+is(
     load_class( 'Class::Load::VersionCheck', { -version => 41 } ),
+    'Class::Load::VersionCheck',
     'loaded class with version check'
 );
 
-ok(
+is(
     load_class( 'Class::Load::VersionCheck2', { -version => 41 } ),
+    'Class::Load::VersionCheck2',
     'loaded class with version check'
 );
 

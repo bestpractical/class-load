@@ -3,6 +3,16 @@
 - The load_class() subroutine now returns the class name on success. Requested
   by Caleb Cushing.
 
+- Exceptions and errors from Class::Load no longer contain references to line
+  numbers in Class::Load or Module::Runtime. This applies to exceptions thrown
+  by load_class, load_first_existing_class, and load_optional_class, as well
+  as the error returned by try_load_class.
+
+- Exceptions are now croaked properly so they appear to come from the calling
+  code, not from an internal subroutine. This makes the exceptions look more
+  like the ones thrown by Perl's require. RT #68663.
+
+
 0.18     2012-02-18
 
 - Require Package::Stash 0.14+. Fixes RT #75095. Reported by Zefram.

@@ -126,7 +126,7 @@ sub load_optional_class {
     return 0
         if $e =~ _nonexistent_fail_re($class);
 
-    _croak($ERROR);
+    _croak($e);
 }
 
 sub try_load_class {
@@ -181,14 +181,19 @@ sub try_load_class {
 }
 
 sub _error {
-    $ERROR = shift;
+    my $e = shift;
+
+    $e =~ s/ at .+?Runtime\.pm line [0-9]+\.$//;
+    chomp $e;
+
+    $ERROR = $e;
     return 0 unless wantarray;
     return 0, $ERROR;
 }
 
 sub _croak {
     require Carp;
-    local $Carp::CarpLevel = $Carp::CarpLevel + 1;
+    local $Carp::CarpLevel = $Carp::CarpLevel + 2;
     Carp::croak(shift);
 }
 

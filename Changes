@@ -1,5 +1,11 @@
 Revision history for Class-Load
 
+0.07
+        Strip the "at /foo/Class/Load.pm line bar." from the error returned
+        by try_load_class(), and make load_class() and load_optional_class()
+        chomp it before croaking it back to the user. This means that
+        load_class() now returns the same error as require() would.
+
 0.06    Mon Nov 15 13:35:37 EST 2010
         BACK COMPAT CHANGE: Remove $Class::Load::ERROR in favor of a
         contextual return value ( Jesse Luehrs )

@@ -27,13 +27,15 @@ sub load_class {
     return 1 if $res;
 
     require Carp;
+    chomp $e;
     Carp::croak $e;
 }
 
 sub load_optional_class {
     my $class = shift;
     # If success, then we report "Its there"
-    return 1 if try_load_class($class);
+    my ($res, $e) = try_load_class($class);
+    return 1 if $res;
 
     # My testing says that if its in INC, the file definately exists
     # on disk. In all versions of Perl. The value isn't reliable,
@@ -42,7 +44,8 @@ sub load_optional_class {
     return 0 unless exists $INC{$file};
 
     require Carp;
-    Carp::croak $ERROR;
+    chomp $e;
+    Carp::croak $e;
 }
 
 sub _mod2pm {
@@ -84,8 +87,11 @@ sub try_load_class {
     };
 
     $ERROR = $@;
+    my $our_file = __FILE__;
+    $ERROR =~ s{ at \Q$our_file\E line [0-9]+\.$}{};
+
     return 0 unless wantarray;
-    return 0, $@;
+    return 0, $ERROR;
 }
 
 sub _is_valid_class_name {

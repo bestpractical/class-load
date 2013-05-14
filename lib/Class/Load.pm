@@ -163,7 +163,7 @@ sub try_load_class {
     #
     # The extra benefit of this trick, is it helps even on
     # 5.10, as instead of dying with "Compilation failed",
-    # it will die with the actual error, and thats a win-win.
+    # it will die with the actual error, and that's a win-win.
     delete $INC{$file};
     return try {
         local $SIG{__DIE__} = 'DEFAULT';

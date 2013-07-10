@@ -296,7 +296,7 @@ If the class doesn't exist, and it appears to not exist on disk either, it
 will return 0.
 
 If the class exists on disk, but loading from disk results in an error
-( i.e.: a syntax error ), then it will C<croak> with that error.
+(e.g.: a syntax error), then it will C<croak> with that error.
 
 This is useful for using if you want a fallback module system, i.e.:
 

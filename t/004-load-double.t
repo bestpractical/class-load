@@ -1,11 +1,10 @@
 use strict;
 use warnings;
 
-use Test::More tests => 2;
-use Class::Load ':all';
-use Test::Fatal;
-
+use Test::More 0.88;
 use lib 't/lib';
+use Test::Class::Load ':all';
+use Test::Fatal;
 
 # This test does 2 things.
 # Firstly, confirm that on 5.8, load_class will
@@ -26,3 +25,4 @@ like( exception {
     load_class('Class::Load::SyntaxError');
 }, qr/syntax error/ );
 
+done_testing;

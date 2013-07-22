@@ -1,9 +1,9 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 14;
-use Class::Load ':all';
+use Test::More 0.88;
 use lib 't/lib';
+use Test::Class::Load ':all';
 
 ok(try_load_class('Class::Load::OK'), "loaded class OK");
 is($Class::Load::ERROR, undef);
@@ -30,3 +30,10 @@ ok(try_load_class('Class::Load::Inlined'), "loaded class Inlined");
 is($Class::Load::ERROR, undef);
 ok(is_class_loaded('Class::Load::Inlined'));
 
+ok(!try_load_class('Class::Load::VersionCheck', { -version => 43 }));
+ok(try_load_class('Class::Load::VersionCheck', { -version => 41 }));
+
+ok(try_load_class('Class::Load::VersionCheck2', { -version => 41 }));
+ok(!try_load_class('Class::Load::VersionCheck2', { -version => 43 }));
+
+done_testing;

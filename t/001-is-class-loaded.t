@@ -1,9 +1,12 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Test::More tests => 13;
+use Test::More 0.88;
 
-use Class::Load 'is_class_loaded';
+use version;
+
+use lib 't/lib';
+use Test::Class::Load 'is_class_loaded';
 
 # basic {{{
 ok(is_class_loaded('Class::Load'), "Class::Load is loaded");
@@ -17,12 +20,12 @@ do {
 };
 ok(is_class_loaded('Class::Load::WithISA'), "class that defines \@ISA is loaded");
 # }}}
-# $ISA (yes, sadly) {{{
+# $ISA (no) {{{
 do {
     package Class::Load::WithScalarISA;
     our $ISA = 'Class::Load';
 };
-ok(is_class_loaded('Class::Load::WithScalarISA'), "class that defines \$ISA is loaded");
+ok(!is_class_loaded('Class::Load::WithScalarISA'), "class that defines \$ISA is not loaded");
 # }}}
 # $VERSION (yes) {{{
 do {
@@ -30,6 +33,13 @@ do {
     our $VERSION = '1.0';
 };
 ok(is_class_loaded('Class::Load::WithVERSION'), "class that defines \$VERSION is loaded");
+# }}}
+# $VERSION is a version object (yes) {{{
+do {
+    package Class::Load::WithVersionObject;
+    our $VERSION = version->new(1);
+};
+ok(is_class_loaded('Class::Load::WithVersionObject'), 'when $VERSION contains a version object, we still return true');
 # }}}
 # method (yes) {{{
 do {
@@ -88,3 +98,12 @@ do {
 ok(is_class_loaded('Class::Load::WithPrototypedStub'), "defining a stub with a prototype means the class is loaded");
 # }}}
 
+ok(!is_class_loaded('Class::Load::VersionCheck'), 'Class::Load::VersionCheck has not been loaded yet');
+require Class::Load::VersionCheck;
+ok(is_class_loaded('Class::Load::VersionCheck'), 'Class::Load::VersionCheck has been loaded');
+ok(!is_class_loaded('Class::Load::VersionCheck', {-version => 43}),
+   'Class::Load::VersionCheck has been loaded but the version check failed');
+ok(is_class_loaded('Class::Load::VersionCheck', {-version => 41}),
+   'Class::Load::VersionCheck has been loaded and the version check passed');
+
+done_testing;

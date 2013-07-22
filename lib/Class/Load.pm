@@ -2,69 +2,157 @@ package Class::Load;
 use strict;
 use warnings;
 use base 'Exporter';
-use File::Spec;
-use Scalar::Util 'reftype';
+use Data::OptList 'mkopt';
+use Module::Implementation 0.04;
+use Module::Runtime 0.012 qw(
+    check_module_name
+    module_notional_filename
+    require_module
+    use_module
+);
+use Try::Tiny;
 
-our $VERSION = '0.06';
+{
+    my $loader = Module::Implementation::build_loader_sub(
+        implementations => [ 'XS', 'PP' ],
+        symbols         => ['is_class_loaded'],
+    );
 
-our @EXPORT_OK = qw/load_class load_optional_class try_load_class is_class_loaded/;
+    $loader->();
+}
+
+our @EXPORT_OK = qw/load_class load_optional_class try_load_class is_class_loaded load_first_existing_class/;
 our %EXPORT_TAGS = (
     all => \@EXPORT_OK,
 );
 
 our $ERROR;
 
-BEGIN {
-    *IS_RUNNING_ON_5_10 = ($] < 5.009_005)
-        ? sub () { 0 }
-        : sub () { 1 };
+sub load_class {
+    my $class   = shift;
+    my $options = shift;
+
+    my ($res, $e) = try_load_class($class, $options);
+    return $class if $res;
+
+    _croak($e);
 }
 
-sub load_class {
-    my $class = shift;
+sub load_first_existing_class {
+    my $classes = Data::OptList::mkopt(\@_)
+        or return;
 
-    my ($res, $e) = try_load_class($class);
-    return 1 if $res;
+    foreach my $class (@{$classes}) {
+        check_module_name($class->[0]);
+    }
 
-    require Carp;
-    Carp::croak $e;
+    for my $class (@{$classes}) {
+        my ($name, $options) = @{$class};
+
+        # We need to be careful not to pass an undef $options to this sub,
+        # since the XS version will blow up if that happens.
+        return $name if is_class_loaded($name, ($options ? $options : ()));
+
+        my ($res, $e) = try_load_class($name, $options);
+
+        return $name if $res;
+
+        my $file = module_notional_filename($name);
+
+        next if $e =~ /^Can't locate \Q$file\E in \@INC/;
+        next
+            if $options
+                && defined $options->{-version}
+                && $e =~ _version_fail_re($name, $options->{-version});
+
+        _croak("Couldn't load class ($name) because: $e");
+    }
+
+    my @list = map {
+        $_->[0]
+            . ( $_->[1] && defined $_->[1]{-version}
+            ? " (version >= $_->[1]{-version})"
+            : q{} )
+    } @{$classes};
+
+    my $err
+        .= q{Can't locate }
+        . _or_list(@list)
+        . " in \@INC (\@INC contains: @INC).";
+    _croak($err);
+}
+
+sub _version_fail_re {
+    my $name = shift;
+    my $vers = shift;
+
+    return qr/\Q$name\E version \Q$vers\E required--this is only version/;
+}
+
+sub _nonexistent_fail_re {
+    my $name = shift;
+
+    my $file = module_notional_filename($name);
+    return qr/Can't locate \Q$file\E in \@INC/;
+}
+
+sub _or_list {
+    return $_[0] if @_ == 1;
+
+    return join ' or ', @_ if @_ ==2;
+
+    my $last = pop;
+
+    my $list = join ', ', @_;
+    $list .= ', or ' . $last;
+
+    return $list;
 }
 
 sub load_optional_class {
-    my $class = shift;
-    # If success, then we report "Its there"
-    return 1 if try_load_class($class);
+    my $class   = shift;
+    my $options = shift;
 
-    # My testing says that if its in INC, the file definately exists
-    # on disk. In all versions of Perl. The value isn't reliable,
-    # but it existing is.
-    my $file = _mod2pm( $class );
-    return 0 unless exists $INC{$file};
+    check_module_name($class);
 
-    require Carp;
-    Carp::croak $ERROR;
-}
+    my ($res, $e) = try_load_class($class, $options);
+    return 1 if $res;
 
-sub _mod2pm {
-    my $class = shift;
-    # see rt.perl.org #19213
-    my @parts = split '::', $class;
-    my $file = $^O eq 'MSWin32'
-             ? join '/', @parts
-             : File::Spec->catfile(@parts);
-    $file .= '.pm';
-    return $file;
+    return 0
+        if $options
+            && defined $options->{-version}
+            && $e =~ _version_fail_re($class, $options->{-version});
+
+    return 0
+        if $e =~ _nonexistent_fail_re($class);
+
+    _croak($e);
 }
 
 sub try_load_class {
-    my $class = shift;
+    my $class   = shift;
+    my $options = shift;
+
+    check_module_name($class);
 
     local $@;
     undef $ERROR;
 
-    return 1 if is_class_loaded($class);
+    if (is_class_loaded($class)) {
+        # We need to check this here rather than in is_class_loaded() because
+        # we want to return the error message for a failed version check, but
+        # is_class_loaded just returns true/false.
+        return 1 unless $options && defined $options->{-version};
+        return try {
+            $class->VERSION($options->{-version});
+            1;
+        }
+        catch {
+            _error($_);
+        };
+    }
 
-    my $file = _mod2pm($class);
+    my $file = module_notional_filename($class);
     # This says "our diagnostics of the package
     # say perl's INC status about the file being loaded are
     # wrong", so we delete it from %INC, so when we call require(),
@@ -75,91 +163,45 @@ sub try_load_class {
     #
     # The extra benefit of this trick, is it helps even on
     # 5.10, as instead of dying with "Compilation failed",
-    # it will die with the actual error, and thats a win-win.
+    # it will die with the actual error, and that's a win-win.
     delete $INC{$file};
-    return 1 if eval {
+    return try {
         local $SIG{__DIE__} = 'DEFAULT';
-        require $file;
-        1;
-    };
-
-    $ERROR = $@;
-    return 0 unless wantarray;
-    return 0, $@;
-}
-
-sub _is_valid_class_name {
-    my $class = shift;
-
-    return 0 if ref($class);
-    return 0 unless defined($class);
-    return 0 unless length($class);
-
-    return 1 if $class =~ /^\w+(?:::\w+)*$/;
-
-    return 0;
-}
-
-sub is_class_loaded {
-    my $class = shift;
-
-    return 0 unless _is_valid_class_name($class);
-
-    # walk the symbol table tree to avoid autovififying
-    # \*{${main::}{"Foo::"}} == \*main::Foo::
-
-    my $pack = \*::;
-    foreach my $part (split('::', $class)) {
-        return 0 unless exists ${$$pack}{"${part}::"};
-        $pack = \*{${$$pack}{"${part}::"}};
-    }
-
-    # We used to check in the package stash, but it turns out that
-    # *{${$$package}{VERSION}{SCALAR}} can end up pointing to a
-    # reference to undef. It looks
-
-    my $version = do {
-        no strict 'refs';
-        ${$class . '::VERSION'};
-    };
-
-    return 1 if ! ref $version && defined $version;
-    # Sometimes $VERSION ends up as a reference to undef (weird)
-    return 1 if ref $version && reftype $version eq 'SCALAR' && defined ${$version};
-
-    return 1 if exists ${$$pack}{ISA}
-             && defined *{${$$pack}{ISA}}{ARRAY};
-
-    # check for any method
-    foreach ( keys %{$$pack} ) {
-        next if substr($_, -2, 2) eq '::';
-
-        my $glob = ${$$pack}{$_} || next;
-
-        # constant subs
-        if ( IS_RUNNING_ON_5_10 ) {
-            my $ref = ref($glob);
-            return 1 if $ref eq 'SCALAR' || $ref eq 'REF';
+        if ($options && defined $options->{-version}) {
+            use_module($class, $options->{-version});
         }
-
-        # stubs
-        my $refref = ref(\$glob);
-        return 1 if $refref eq 'SCALAR';
-
-        return 1 if defined *{$glob}{CODE};
+        else {
+            require_module($class);
+        }
+        1;
     }
+    catch {
+        _error($_);
+    };
+}
 
-    # fail
-    return 0;
+sub _error {
+    my $e = shift;
+
+    $e =~ s/ at .+?Runtime\.pm line [0-9]+\.$//;
+    chomp $e;
+
+    $ERROR = $e;
+    return 0 unless wantarray;
+    return 0, $ERROR;
+}
+
+sub _croak {
+    require Carp;
+    local $Carp::CarpLevel = $Carp::CarpLevel + 2;
+    Carp::croak(shift);
 }
 
 1;
 
+# ABSTRACT: a working (require "Class::Name") and more
+
 __END__
-
-=head1 NAME
-
-Class::Load - a working (require "Class::Name") and more
 
 =head1 SYNOPSIS
 
@@ -193,7 +235,7 @@ provide C<is_class_loaded 'Class::Name'>.
 
 =head1 FUNCTIONS
 
-=head2 load_class Class::Name
+=head2 load_class Class::Name, \%options
 
 C<load_class> will load C<Class::Name> or throw an error, much like C<require>.
 
@@ -201,8 +243,14 @@ If C<Class::Name> is already loaded (checked with C<is_class_loaded>) then it
 will not try to load the class. This is useful when you have inner packages
 which C<require> does not check.
 
-=head2 try_load_class Class::Name -> 0|1
-=head2 try_load_class Class::Name -> (0|1, error message)
+The C<%options> hash currently accepts one key, C<-version>. If you specify a
+version, then this subroutine will call C<< Class::Name->VERSION(
+$options{-version} ) >> internally, which will throw an error if the class's
+version is not equal to or greater than the version you requested.
+
+This method will return the name of the class on success.
+
+=head2 try_load_class Class::Name, \%options -> (0|1, error message)
 
 Returns 1 if the class was loaded, 0 if it was not. If the class was not
 loaded, the error will be returned as a second return value in list context.
@@ -211,26 +259,46 @@ Again, if C<Class::Name> is already loaded (checked with C<is_class_loaded>)
 then it will not try to load the class. This is useful when you have inner
 packages which C<require> does not check.
 
-=head2 is_class_loaded Class::Name -> 0|1
+Like C<load_class>, you can pass a C<-version> in C<%options>. If the version
+is not sufficient, then this subroutine will return false.
+
+=head2 is_class_loaded Class::Name, \%options -> 0|1
 
 This uses a number of heuristics to determine if the class C<Class::Name> is
 loaded. There heuristics were taken from L<Class::MOP>'s old pure-perl
 implementation.
 
-=head2 load_optional_class Class::Name -> 0|1
+Like C<load_class>, you can pass a C<-version> in C<%options>. If the version
+is not sufficient, then this subroutine will return false.
+
+=head2 load_first_existing_class Class::Name, \%options, ...
+
+This attempts to load the first loadable class in the list of classes
+given. Each class name can be followed by an options hash reference.
+
+If any one of the classes loads and passes the optional version check, that
+class name will be returned. If I<none> of the classes can be loaded (or none
+pass their version check), then an error will be thrown.
+
+If, when attempting to load a class, it fails to load because of a syntax
+error, then an error will be thrown immediately.
+
+=head2 load_optional_class Class::Name, \%options -> 0|1
 
 C<load_optional_class> is a lot like C<try_load_class>, but also a lot like
 C<load_class>.
 
-If the class exists, and it works, then it will return 1.
+If the class exists, and it works, then it will return 1. If you specify a
+version in C<%options>, then the version check must succeed or it will return
+0.
 
 If the class doesn't exist, and it appears to not exist on disk either, it
 will return 0.
 
 If the class exists on disk, but loading from disk results in an error
-( ie: a syntax error ), then it will C<croak> with that error.
+(e.g.: a syntax error), then it will C<croak> with that error.
 
-This is useful for using if you want a fallback module system, ie:
+This is useful for using if you want a fallback module system, i.e.:
 
     my $class = load_optional_class($foo) ? $foo : $default;
 
@@ -261,19 +329,6 @@ This module was designed to be used anywhere you have
 C<if (eval "require $module"; 1)>, which occurs in many large projects.
 
 =back
-
-=head1 AUTHOR
-
-Shawn M Moore, C<< <sartak at bestpractical.com> >>
-
-The implementation of C<is_class_loaded> has been taken from L<Class::MOP>.
-
-=head1 COPYRIGHT & LICENSE
-
-Copyright 2008-2010 Best Practical Solutions.
-
-This program is free software; you can redistribute it and/or modify it
-under the same terms as Perl itself.
 
 =cut
 
